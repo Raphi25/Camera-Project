@@ -1,0 +1,30 @@
+# ESP-IDF generated directories
+build/
+managed_components/
+sdkconfig.old
+
+# Python environments / cache
+.venv/
+__pycache__/
+*.py[cod]
+
+# Editor / machine-specific files
+.vscode/
+.clangd
+*.log
+
+# Generated application output
+dist/
+*.exe
+
+# Generated firmware
+*.bin
+*.elf
+*.map
+
+# Local application data
+Pictures/
+gui_password_store.json
+gui_settings_store.json
+
+App.zip

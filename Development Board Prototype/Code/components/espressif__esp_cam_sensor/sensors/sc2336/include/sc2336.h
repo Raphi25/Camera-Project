@@ -1,0 +1,32 @@
+/*
+ * SPDX-FileCopyrightText: 2024 Espressif Systems (Shanghai) CO LTD
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+#pragma once
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "esp_cam_sensor_types.h"
+#include "sc2336_types.h"
+
+#define SC2336_SCCB_ADDR   0x30
+#define SC2336_PID         0xcb3a
+#define SC2336_SENSOR_NAME "SC2336"
+
+/**
+ * @brief Power on camera sensor device and detect the device connected to the designated sccb bus.
+ *
+ * @param[in] config Configuration related to device power-on and detection.
+ * @return
+ *      - Camera device handle on success, otherwise, failed.
+ */
+esp_cam_sensor_device_t *sc2336_detect(esp_cam_sensor_config_t *config);
+
+esp_err_t sc2336_set_boot_fps(uint8_t fps);
+
+#ifdef __cplusplus
+}
+#endif
