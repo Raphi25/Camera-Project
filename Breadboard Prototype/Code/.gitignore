@@ -1,0 +1,24 @@
+# ESP-IDF build output
+build/
+managed_components/
+dependencies.lock
+sdkconfig.old
+
+# Local Python environment and caches
+.venv/
+__pycache__/
+*.py[cod]
+
+# Local runtime data
+Pictures/
+gui_password_store.json
+gui_settings_store.json
+
+# Editor/local machine state
+.vscode/
+*.log
+
+# Generated firmware artifacts, if copied outside build/
+*.bin
+*.elf
+*.map

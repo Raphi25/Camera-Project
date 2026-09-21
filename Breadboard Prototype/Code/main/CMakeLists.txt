@@ -1,0 +1,38 @@
+idf_component_register(
+    SRCS
+        "app_controller.c"
+        "camera_capture.c"
+        "capture_scheduler.c"
+        "command_dispatcher.c"
+        "command_transport.c"
+        "communications_control.c"
+        "communications_policy.c"
+        "crypto_kdf.c"
+        "daily_summary.c"
+        "device_credentials.c"
+        "device_settings.c"
+        "diagnostic_commands.c"
+        "event_breadcrumbs.c"
+        "health_diag.c"
+        "image_crypto.c"
+        "imu_orientation.c"
+        "jpeg_m2m_encoder.c"
+        "log_sink.c"
+        "main.c"
+        "media_commands.c"
+        "media_transfer.c"
+        "program_persistence.c"
+        "program_state.c"
+        "protocol_frame.c"
+        "protocol_version.c"
+        "rtc.c"
+        "scene_classifier.c"
+        "sd_storage.c"
+        "startup_init.c"
+        "summary_commands.c"
+        "usb_msc.c"
+        "watchdog_supervisor.c"
+    REQUIRES driver esp_timer fatfs sdmmc esp_driver_sdmmc esp_driver_usb_serial_jtag mbedtls
+             esp_driver_jpeg esp_driver_uart esp_hw_support esp_mm bt nvs_flash
+             espcoredump espressif__esp_tinyusb
+)

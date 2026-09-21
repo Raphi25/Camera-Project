@@ -1,0 +1,2 @@
+amplitude_deg,velocity_deg_s,exposure_s,focal_px,expected_blur_px,frame_us,width,height
+30.000,25.000,0.016667,685.5,4.985,466057230,1920,1080

@@ -1,0 +1,18 @@
+dependencies:
+  # USB Mass Storage on the FireBeetle 2 ESP32-P4 native OTG USB-C port.
+  espressif/esp_tinyusb:
+    version: "~2.2.*"
+  # esp_hosted provides the SDIO transport and hosted HCI/VHCI path to the C6.
+  espressif/esp_hosted:
+    # 1.4.x predates IDF 6's split SDMMC driver components and no longer builds.
+    # Keep host and on-board C6 coprocessor firmware on the same 2.12 release.
+    version: "~2.12.3"
+  # Pulls in the hosted transport pieces used by Espressif's P4/C6 examples.
+  espressif/esp_wifi_remote:
+    # 1.2.2 removes the esp_interface.h compatibility include deleted by IDF 6.
+    version: "~1.2.2"
+  espressif/esp_video:
+    version: "*"
+  espressif/esp_cam_sensor:
+    version: "^2.3.0"
+    override_path: "../components/espressif__esp_cam_sensor"

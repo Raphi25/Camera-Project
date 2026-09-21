@@ -1,0 +1,5 @@
+bleak
+cryptography
+Pillow
+PySide6
+pyserial

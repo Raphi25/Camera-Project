@@ -1,0 +1,7 @@
+# Compatibility overlay: these settings are now also in sdkconfig.defaults.
+# Only for the already provisioned board documented by the SC2336 source.
+# This does not encrypt JPEGs or provision a new board.
+CONFIG_PARTITION_TABLE_OFFSET=0x9000
+CONFIG_SECURE_FLASH_ENC_ENABLED=y
+CONFIG_SECURE_FLASH_ENCRYPTION_MODE_DEVELOPMENT=y
+CONFIG_SECURE_FLASH_REQUIRE_ALREADY_ENABLED=y

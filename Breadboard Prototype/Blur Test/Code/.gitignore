@@ -1,0 +1,8 @@
+build/
+build-encrypted/
+build-output.log
+sdkconfig.encrypted
+sdkconfig.encrypted.old
+sdkconfig
+sdkconfig.old
+__pycache__/

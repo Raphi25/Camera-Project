@@ -1,0 +1,14 @@
+This project now targets the existing development-encrypted board.
+Images saved on the SD card remain ordinary, unencrypted JPEGs.
+Exit monitor first with Ctrl+], then open an ESP-IDF terminal in this project.
+Use the following commands (replace COM5 if needed):
+
+idf.py -B build build
+idf.py -B build -p COM5 encrypted-flash
+esptool --chip esp32p4 -p COM5 run
+idf.py -B build -p COM5 monitor
+
+Use full encrypted-flash, not encrypted-app-flash, to recover an invalid
+bootloader header. Opening monitor alone never installs the new firmware.
+If flashing cannot connect: hold BOOT, tap RESET, release BOOT, and retry.
+Do not erase flash or change/burn eFuses for this recovery.

@@ -1,0 +1,6 @@
+If the chip is encrypted (fuses activated), click on Open ESP-IDF Terminal and then use the following commands:
+
+idf.py -B build build
+idf.py -B build -p COM5 encrypted-flash
+esptool --chip esp32p4 -p COM5 run
+idf.py -B build -p COM5 monitor
