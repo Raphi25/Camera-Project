@@ -1,0 +1,15 @@
+Product name;Description;Item number;Vendor;Price per unit [Dkk];Amount;Total price
+FireBeetle 2 ESP32-P4 AI Vision Board ;Microprocessor;DFR1172;DFRobot;155;1;155
+SC2336;Camera Module;;Wireless-Tag;29,56;1;29,56
+Arducam OV5647;Camera Module;B003504;Arducam;157,61;1;157,61
+Seeed Studio Battery Charger;Battery charger;287-6437;RS;48,57;1;48,57
+Genopladeligt batteri, 3.7 V, Litium-polymer, 1.8 Ah;Lithium Battery;144-9405;RS;109,56;1;109,56
+Adafruit DS3231 Precision RTC Breakout;RTC;;Amazon;149,49;1;149,49
+6DOF IMU Sensor;IMU;SEN0693;DFRobot;43,95;1;43,95
+Wireless Charging Module 5V/1A;Wireless Charging Module;DFR0362;DFRobot;43,95;1;43,95
+Servo;;;;;1;
+Breadboard;;;;;1;
+Male-Female Wires;;;;;8;
+Male-Male Wires;;;;;10;
+Micro SD Card;;;;;1;
+;;;;;TOTAL:;737,69
