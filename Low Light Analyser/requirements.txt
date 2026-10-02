@@ -1,0 +1,5 @@
+numpy>=2.0
+opencv-python-headless>=4.10
+pandas>=2.2
+matplotlib>=3.9
+openpyxl>=3.1

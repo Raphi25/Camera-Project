@@ -1,0 +1,173 @@
+.btn-default:active,
+.btn-default:focus {
+    outline: none;
+    background-color: #fff;
+    border-color: #ccc;
+}
+
+.navbar-placeholder {
+    height: 71px;
+}
+
+.navbar .navbar-header .navbar-brand {
+    padding-left: 12px;
+    padding-right: 12px;
+    margin-left: -12px;
+}
+
+.navbar-nav > li > a {
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+.navbar .top {
+    float: left;
+}
+
+.navbar .top .right {
+    display: none;
+    float: right;
+}
+
+.navbar .navbar-form.setup {
+    margin-right: -15px;
+}
+
+.navbar .navbar-form .form-control {
+    padding-left: 7px;
+    padding-right: 7px;
+}
+
+.navbar .form-group {
+    margin: 0 7px 0 0;
+}
+
+.navbar .form-group input {
+    width: 165px;
+}
+
+.navbar .form-group input[name="port"] {
+    width: 90px;
+}
+
+.content {
+    padding: 0 0 10px 0;
+}
+
+.content .log {
+    overflow: auto;
+}
+
+.content .log pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin-bottom: 0;
+
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+}
+
+.content .data {
+    margin: 20px 0 0 0;
+}
+
+.content .graph-data {
+    margin: 40px 0 0 0;
+}
+
+.content .graph-data .graph {
+    margin: 20px 0 0 0;
+}
+
+.content .graph-data .graph .loading {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.form-inline .form-group {
+    margin: 0 10px 0 0;
+}
+
+.form-inline .form-group label {
+    margin: 0 10px 0 0;
+}
+
+#graph {
+    height: 700px;
+}
+
+@media (max-width: 1199px) {
+    .navbar-header {
+        display: none;
+    }
+}
+
+@media (max-width: 991px) {
+    .navbar .top {
+        float: none;
+    }
+
+    .navbar .top .navbar-header {
+        float: left !important;
+    }
+
+    .navbar .top .right {
+        display: block;
+    }
+
+    .navbar .top .right .nav li {
+        float: left !important;
+    }
+
+    .navbar > .container > .nav,
+    .navbar > .container > .navbar-form {
+        float: none !important;
+        display: none;
+        padding-left: 0 !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .container {
+        padding: 0 15px;
+    }
+
+    .navbar > .container > .navbar-form {
+        padding: 0 15px !important;
+        border: none;
+    }
+
+    .navbar .form-group input {
+        width: 100% !important;
+    }
+
+    .navbar .form-group {
+        margin: 0 0 10px 0;
+    }
+}
+
+@media (min-width: 787px) {
+    .container {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
+.rfcomm .scan-result,
+.ble .scan-result,
+.serial .scan-result {
+    margin: 20px 0 0 0;
+}
+
+.serial input[name="port"] {
+    width: 150px;
+}
+
+.serial .scan {
+    margin: 20px 0 0 0;
+}
+
+.paginator {
+    margin: -10px 0 20px 0;
+}

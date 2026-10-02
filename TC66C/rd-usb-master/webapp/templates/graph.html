@@ -1,0 +1,86 @@
+{% extends "layout.html" %}
+{% block content %}
+    <form class="form-inline" method="get">
+        <div class="form-group">
+            <label for="name">Session name</label>
+            <select class="form-control" name="session" data-submit-on-change data-focus-me>
+                {% for session in sessions %}
+                    <option value="{{ session["id"] }}"{% if selected == session["id"] %} selected{% endif %}>
+                        {{ session["name"] }} ({{ format_datetime(session["timestamp"]) }}{% if session["version"] %}, {{ session["version"] }}{% endif %})
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <input type="hidden" name="left_axis" value="{{ left_axis }}" />
+        <input type="hidden" name="right_axis" value="{{ right_axis }}" />
+        <button type="submit" class="btn btn-default">Select</button>
+    </form>
+
+    {% if item %}
+        <div class="data last-measurement" id="current">
+            <h3>Current value</h3>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Voltage</th>
+                        <th>Current</th>
+                        <th>Power</th>
+                        <th>Temperature</th>
+                        <th>Data +/-</th>
+                        <th>Mode</th>
+                        <th>Accumulated</th>
+                        <th>Resistance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ format.time(item) }}</td>
+                        <td>{{ format.voltage(item) }}</td>
+                        <td>{{ format.current(item) }}</td>
+                        <td>{{ format.power(item) }}</td>
+                        <td>{{ format.temperature(item) }}</td>
+                        <td>{{ format.data(item) }}</td>
+                        <td>{{ format.mode(item) }}</td>
+                        <td>{{ format.accumulated(item) }}</td>
+                        <td>{{ format.resistance(item) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+    <div class="graph-data">
+        <form class="form-inline" id="graph-settings">
+            {% macro render_select(name, current) %}
+                <select class="form-control" name="{{ name }}">
+                    {% for key, name in metrics|items %}
+                        <option value="{{ key }}"{{ format.selected(current, key) }}>{{ name }}</option>
+                    {% endfor %}
+                </select>
+            {% endmacro %}
+            <div class="form-group">
+                <label for="left_axis">Left axis</label>
+                {{ render_select("left_axis", left_axis) }}
+            </div>
+            <div class="form-group">
+                <label for="right_axis">Right axis</label>
+                {{ render_select("right_axis", right_axis) }}
+            </div>
+            <div class="form-group">
+                <label for="colors">Colors</label>
+                <select class="form-control" name="colors">
+                    <option value="colorful"{% if colors == "colorful" %} selected{% endif %}>Colorful</option>
+                    <option value="contrast"{% if colors == "contrast" %} selected{% endif %}>Better contrast</option>
+                    <option value="midnight"{% if colors == "midnight" %} selected{% endif %}>Midnight</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-default">Apply</button>
+        </form>
+
+        <div class="graph">
+            <div class="loading">Loading... Please wait<span data-dots>...</span></div>
+            <div data-url="{{ url_for("index.graph_data") }}" id="graph" data-colors="{{ colors }}"></div>
+        </div>
+    </div>
+{% endblock %}

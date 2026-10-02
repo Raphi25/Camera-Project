@@ -1,0 +1,20 @@
+TC66 Current Draw Summary
+=========================
+Source file: 2026-09-01-02-sc2336-burst.csv
+Start time: 2026-09-01 18:01:14
+End time: 2026-09-02 16:52:41
+Duration: 22:51:27
+Samples: 82230
+
+Minimum current draw: 0.034310 A (34.310 mA)
+Maximum current draw: 0.185940 A (185.940 mA)
+Average current draw: 0.049904 A (49.904 mA)
+Average current while camera is active: 0.058574 A (58.574 mA; duration 13:51:27)
+Average current while camera is asleep: 0.036554 A (36.554 mA; duration 09:00:00)
+Total current drawn: 1.140674810 Ah (1140.674810 mAh)
+Current consumed per 24 hours: 1.197690 Ah/24 h (1197.690 mAh/24 h)
+
+The average and total use trapezoidal time integration between samples.
+Camera schedule: asleep 23:00-08:00; active outside that period.
+Intervals crossing a scheduled state transition are split at the transition.
+The 24-hour consumption is projected from the time-weighted average current.

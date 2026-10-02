@@ -1,0 +1,22 @@
+flask~=3.1.2
+pyserial~=3.5
+python-socketio~=5.15.0
+python-engineio~=4.12.3
+appdirs~=1.4.4
+
+bleak~=2.0.0
+pycryptodome~=3.23.0
+git+https://github.com/pybluez/pybluez.git#egg=pybluez
+
+# pendulum <3.0.0 is used by default since it has wider compatibility for now
+# but pendulum >=3.0.0 is required with newer python
+pendulum~=2.1.2
+
+# GUI-only depenencies
+pywebview~=6.1.0
+pythonnet~=3.0.5
+screeninfo~=0.8.1
+
+# don't forget pip install -U pyinstaller on upgrade
+# and also update requirements_headless.txt if applicable
+# and also update requirements_headless_new.txt if applicable

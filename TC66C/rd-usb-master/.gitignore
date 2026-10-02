@@ -1,0 +1,8 @@
+/build/
+/dist/
+/data/*
+*.pyc
+
+/version.txt
+
+!.gitignore

@@ -1,0 +1,375 @@
+--- PDF PAGE 1 ---
+© ISO 2018
+Photography — Digital cameras — 
+Measuring low-light performance
+Photographie — Caméras numériques — Mesurage des performances 
+dans des conditions de faible luminosité
+INTERNATIONAL 
+STANDARD
+ISO
+19093
+First edition
+2018-08
+Reference number
+ISO 19093:2018(E)
+iTeh STANDARD PREVIEW
+(standards.iteh.ai)
+ISO 19093:2018
+https://standards.iteh.ai/catalog/standards/sist/d0505cb4-a940-4f16-9ead-
+c9a67646ac52/iso-19093-2018
+
+--- PDF PAGE 2 ---
+ 
+ISO 19093:2018(E)
+ 
+ii © ISO 2018 – All rights reserved
+COPYRIGHT PROTECTED DOCUMENT
+©  ISO 2018
+All rights reserved. Unless otherwise specified, or required in the context of its implementation, no part of this publication may 
+be reproduced or utilized otherwise in any form or by any means, electronic or mechanical, including photocopying, or posting 
+on the internet or an intranet, without prior written permission. Permission can be requested from either ISO at the address 
+below or ISO’s member body in the country of the requester.
+ISO copyright office
+CP 401 • Ch. de Blandonnet 8
+CH-1214 Vernier, Geneva
+Phone: +41 22 749 01 11
+Fax: +41 22 749 09 47
+Email: copyright@iso.org
+Website: www.iso.org
+Published in Switzerland
+iTeh STANDARD PREVIEW
+(standards.iteh.ai)
+ISO 19093:2018
+https://standards.iteh.ai/catalog/standards/sist/d0505cb4-a940-4f16-9ead-
+c9a67646ac52/iso-19093-2018
+
+--- PDF PAGE 3 ---
+ 
+ISO 19093:2018(E)
+ 
+Foreword ........................................................................................................................................................................................................................................iv
+Introduction ..................................................................................................................................................................................................................................v
+1 Scope  .................................................................................................................................................................................................................................1
+2 Normative references ......................................................................................................................................................................................1
+3	 Terms	and	definitions  .....................................................................................................................................................................................1
+4 Test conditions and setup ........................................................................................................................................................................... 2
+4.1 Test chart...................................................................................................................................................................................................... 2
+4.1.1 Test chart and illumination .....................................................................................................................................2
+4.2 Camera settings ......................................................................................................................................................................................3
+4.2.1 General...................................................................................................................................................................................... 3
+4.2.2 Test lenses ............................................................................................................................................................................. 4
+4.2.3 Auto focus .............................................................................................................................................................................. 4
+4.2.4 Quality and file type ......................................................................................................................................................4
+4.2.5 ISO sensitivity setting ..................................................................................................................................................4
+4.2.6 White balance .....................................................................................................................................................................4
+4.2.7 Flash ............................................................................................................................................................................................5
+4.2.8 Noise reduction .................................................................................................................................................................5
+4.2.9 Exposure mode ..................................................................................................................................................................5
+4.2.10 Scene and capture modes .........................................................................................................................................5
+4.3 Capturing a reference image .......................................................................................................................................................5
+4.4 Capture of the test images .............................................................................................................................................................5
+4.4.1 Illumination level............................................................................................................................................................. 5
+4.4.2 Best image selection ..................................................................................................................................................... 5
+5 Camera performance aspects affected by low light ..........................................................................................................6
+5.1 Exposure time ..........................................................................................................................................................................................6
+5.2 Exposure level ..........................................................................................................................................................................................6
+5.3 Noise ................................................................................................................................................................................................................ 6
+5.4 Texture (low-contrast fine detail) .......................................................................................................................................... 6
+5.5 Chroma decrease ...................................................................................................................................................................................7
+6 Presentation of the results .........................................................................................................................................................................8
+Annex A (informative) Example for generating a single performance value from measured 
+results ...........................................................................................................................................................................................................................10
+Annex B (normative) Test chart ..............................................................................................................................................................................12
+Bibliography .............................................................................................................................................................................................................................19
+© ISO 2018 – All rights reserved iii
+Contents Page
+iTeh STANDARD PREVIEW
+(standards.iteh.ai)
+ISO 19093:2018
+https://standards.iteh.ai/catalog/standards/sist/d0505cb4-a940-4f16-9ead-
+c9a67646ac52/iso-19093-2018
+
+--- PDF PAGE 4 ---
+ 
+ISO 19093:2018(E)
+Foreword
+ISO (the International Organization for Standardization) is a worldwide federation of national standards 
+bodies (ISO member bodies). The work of preparing International Standards is normally carried out 
+through ISO technical committees. Each member body interested in a subject for which a technical 
+committee has been established has the right to be represented on that committee. International 
+organizations, governmental and non-governmental, in liaison with ISO, also take part in the work. 
+ISO collaborates closely with the International Electrotechnical Commission (IEC) on all matters of 
+electrotechnical standardization. 
+The procedures used to develop this document and those intended for its further maintenance are 
+described in the ISO/IEC Directives, Part 1. In particular, the different approval criteria needed for the 
+different types of ISO documents should be noted. This document was drafted in accordance with the 
+editorial rules of the ISO/IEC Directives, Part 2 (see www .iso .org/directives).
+Attention is drawn to the possibility that some of the elements of this document may be the subject of 
+patent rights. ISO shall not be held responsible for identifying any or all such patent rights. Details of 
+any patent rights identified during the development of the document will be in the Introduction and/or 
+on the ISO list of patent declarations received (see www .iso .org/patents).
+Any trade name used in this document is information given for the convenience of users and does not 
+constitute an endorsement. 
+For an explanation of the voluntary nature of standards, the meaning of ISO specific terms and 
+expressions related to conformity assessment, as well as information about ISO's adherence to the 
+World Trade Organization (WTO) principles in the Technical Barriers to Trade (TBT) see www .iso 
+.org/iso/foreword .html.
+This document was prepared by Technical Committee ISO/TC 42, Photography.
+Any feedback or questions on this document should be directed to the user’s national standards body. A 
+complete listing of these bodies can be found at www .iso .org/members .html.
+ 
+iv © ISO 2018 – All rights reserved
+iTeh STANDARD PREVIEW
+(standards.iteh.ai)
+ISO 19093:2018
+https://standards.iteh.ai/catalog/standards/sist/d0505cb4-a940-4f16-9ead-
+c9a67646ac52/iso-19093-2018
+
+--- PDF PAGE 5 ---
+ 
+ISO 19093:2018(E)
+Introduction
+The major engineering difference between a system camera, a point and shoot camera, and a camera in 
+a mobile device is the sensor size. The sensor size is also related to the overall system size including the 
+lens. With smaller sensors, the individual light sensitive areas are also smaller and therefore less light 
+falls onto each of the pixels.
+Smaller individual light sensitive areas require higher signal amplification that leads to higher noise 
+levels or other problems that can occur due to denoising algorithms. These problems become more 
+visible at low-light conditions because of the lower signal levels.
+Most cameras are used without a tripod even at low-light conditions. At low light in combination with a 
+tripod, the performance of a camera is always good because the sensitivity setting can be kept to a low 
+value and the exposure time can be very long. For these reasons the low-light performance is measured 
+using conditions that reflect the result of a handheld shot.
+Sometimes the data sheets of a camera state a light level for the low-light performance of a camera. 
+Prior to the creation of this document, the way to determine these values was not defined and therefore 
+the values were unreliable to users.
+ 
+© ISO 2018 – All rights reserved v
+iTeh STANDARD PREVIEW
+(standards.iteh.ai)
+ISO 19093:2018
+https://standards.iteh.ai/catalog/standards/sist/d0505cb4-a940-4f16-9ead-
+c9a67646ac52/iso-19093-2018
+
+--- PDF PAGE 6 ---
+iTeh STANDARD PREVIEW
+(standards.iteh.ai)
+ISO 19093:2018
+https://standards.iteh.ai/catalog/standards/sist/d0505cb4-a940-4f16-9ead-
+c9a67646ac52/iso-19093-2018
+
+--- PDF PAGE 7 ---
+ 
+Photography — Digital cameras — Measuring low-light 
+performance
+1 Scope
+This document specifies a protocol to measure the low-light performance of a camera. It is applicable to 
+the measurement of digital cameras including camera phones and other mobile devices.
+The performance aspects defined in this document are intended to all be tested. Picking one or some of 
+them by the tester is out of scope of the usage of this document.
+2 Normative references
+The following documents are referred to in the text in such a way that some or all of their content 
+constitutes requirements of this document. For dated references, only the edition cited applies. For 
+undated references, the latest edition of the referenced document (including any amendments) applies.
+ISO 7589, Photography  —  Illuminants  for  sensitometry  —   Specifications  for  daylight,  incandescent 
+tungsten and printer
+ISO 14524, Photography — Electronic still-picture cameras  — Methods for measuring opto-electronic 
+conversion functions (OECFs)
+ISO 15739, Photography — Electronic still-picture imaging — Noise measurements
+ISO/TS 19567-1, Photography — Digital cameras — Texture reproduction measurements — Part 1: 
+Frequency characteristics measurements using cyclic pattern
+IEC 61966-2-1, Multimedia systems and equipment — Colour measurement and management — Part 2-1: 
+Default RGB colour space — sRGB
+3	 Terms	and	definitions
+For the purposes of this document, the following terms and definitions apply.
+ISO and IEC maintain terminological databases for use in standardization at the following addresses:
+— ISO Online browsing platform: available at https: / /www .iso .org/obp
+— IEC Electropedia: available at http: / /www .electropedia  .org/
+3.1
+handheld limit exposure time
+exposure time empirically considered as an upper limit to give a reasonably sharp image with handheld 
+shooting, which is 1/f s, where f is the value of the 35 mm sensor equivalent focal length of the lens
+Note 1 to entry: If the camera has a mechanism for image stabilization, a longer exposure time than 1/ f s for 
+handheld shooting can still produce reasonably sharp images.
+3.2
+35	mm	film	equivalent	focal	length
+focal length of a lens attached to a camera with a sensor size of 24 mm × 36 mm (originated from 35 mm 
+film) that produces the same field of view as the camera system with a lens at a given focal length for 
+which the 35 mm sensor equivalent focal length is specified
+INTERNATIONAL ST ANDARD ISO 19093:2018(E)
+© ISO 2018 – All rights reserved 1
+iTeh STANDARD PREVIEW
+(standards.iteh.ai)
+ISO 19093:2018
+https://standards.iteh.ai/catalog/standards/sist/d0505cb4-a940-4f16-9ead-
+c9a67646ac52/iso-19093-2018
+
+--- PDF PAGE 8 ---
+ 
+ISO 19093:2018(E)
+3.3
+full frame sensor
+image sensor that fills the full 24 mm × 36 mm image size of the 35 mm film format
+4 Test conditions and setup
+4.1 Test chart
+4.1.1 Test chart and illumination
+The lighting condition shall be consistent with the daylight conditions specified in ISO 7589. The chart 
+shall be uniformly illuminated in a way that minimizes stray light and specular reflection. The light 
+source needs to be dimmable without a significant change in the spectral distribution of the light. Using 
+a set of polarizing filters, neutral density filters or using a special spectrally tunable LED light source 
+can achieve this. See Figure 1.
+Key
+1 test chart
+2 spectroradiometer
+3 dimmable daylight source
+Figure 1 — Setup of the chart illumination
+Since modern still cameras provide scene-dependent image processing, the ideal approach for a low-
+light test is using a test chart that contains all necessary structures for evaluating the relevant image-
+quality parameters. The following chart is one commercially available example for such a chart.
+The chart shall contain at least the following structures:
+— a grey scale according to ISO 14524 with a contrast range of at least 100:1 and at least 16 grey levels 
+to determine the opto-electronic conversion function (OECF) and noise performance according to 
+ISO 14524 and ISO 15739;
+ 
+2 © ISO 2018 – All rights reserved
+iTeh STANDARD PREVIEW
+(standards.iteh.ai)
+ISO 19093:2018
+https://standards.iteh.ai/catalog/standards/sist/d0505cb4-a940-4f16-9ead-
+c9a67646ac52/iso-19093-2018
+
+--- PDF PAGE 9 ---
+ 
+ISO 19093:2018(E)
+— a set of colour patches with at least 18 colours including colours similar to the ones mentioned in 
+ISO 17321-1 for colour characterization. The height and width of each patch shall be greater than 
+2 % of the image height;
+— sinusoidal resolution structures in low contrast to determine the texture MTF according to 
+ISO TS 19567-1;
+— a focusing aid feature consisting of concentric black and white circles at different frequencies shall 
+be placed in the centre of the chart as shown in Figure 2;
+— an area of 18 % grey shall be included, and shall additionally form the background on which the 
+other chart features are placed.
+Even though the current version of this document does not use them, it can be helpful to include the 
+following optional structures:
+— coloured dead leaves structures for additional texture analysis on stochastic structures as described 
+in ISO TS 19567-2;
+— resolution structures according to ISO 12233 to determine the modulation transfer function (MTF).
+The minimum active chart height shall be 675 mm, which is approximately 30 times the height of a 
+35 mm film equivalent “full frame” sensor. See Annex B for a detailed description of the chart.
+Figure 2 — An example for the multi-purpose test chart
+4.2 Camera settings
+4.2.1 General
+The camera shall be fixed on a test bench during all the tests. The test needs to produce comparable 
+results over a huge variety of different cameras. The biggest challenge is to provide a fair comparison 
+between cameras with no control elements for the image capture (like exposure, ISO sensitivity, etc.) 
+and cameras that require or at least allow full control over all functions and features.
+ 
+© ISO 2018 – All rights reserved 3
+iTeh STANDARD PREVIEW
+(standards.iteh.ai)
+ISO 19093:2018
+https://standards.iteh.ai/catalog/standards/sist/d0505cb4-a940-4f16-9ead-
+c9a67646ac52/iso-19093-2018
+
+--- PDF PAGE 10 ---
+ 
+ISO 19093:2018(E)
+4.2.2 Test lenses
+For low-light performance comparison of cameras with interchangeable lenses, lenses with the same 
+open aperture and 35 mm film equivalent focal length shall be used.
+All cameras shall be tested at 28 mm focal length (35 mm sensor equivalent) if available. The reason 
+for using the same equivalent focal length is to get comparable results for all cameras. In case of fixed 
+focal length most cameras consist of a slight wide angle lens with an equivalent focal length around 
+28 mm, which is the reason why this focal length is to be the default. Open aperture shall be used for all 
+measurements.
+4.2.3 Auto focus
+All images should be captured using the auto focus (AF) function. In case a camera does not have an AF, 
+it shall be reported together with the results.
+When a test camera has an AF function, refocusing is required for every capture. An object may be put 
+between the test chart and the camera to trigger the refocusing. The auto focus mode of the camera can 
+have an impact on the results and shall therefore be reported together with the results.
+When a tested camera fails to focus at some light levels, a column should be added to the result table 
+indicating at which light levels this was the case. The camera’s focus indicator, if available, may be 
+used to identify a focus failure. Focus failure may be determined by visually examining the image for 
+noticeable poor focus.
+If a camera with an AF function is tested in manual focus mode, the tester shall verify that the AF 
+function works under all lighting conditions. The verification needs to be mentioned together with the 
+results.
+4.2.4	 Quality	and	file	type
+In case the purpose of the use of this document is to compare the raw images of different cameras, the 
+raw images shall be captured and ideally be processed using the same raw processing software with 
+identical settings. If no raw processing software that can process all images is available, then multiple 
+processors should be configured to use comparable settings and produce comparable results. The raw 
+processing software used and the fact that the comparison is based on raw images shall be explicitly 
+mentioned together with the results.
+In all other cases, the compared images are output-referred images that were processed in the camera. 
+In these cases, cameras should be set to produce the highest image quality (lowest compression). This 
+is typically a mode that creates a final TIFF or JPEG file.
+4.2.5 ISO sensitivity setting
+If available, the “auto ISO sensitivity” feature for automatic scene dependent signal amplification shall 
+be used. If available, the handheld limit exposure time shall be selected as the longest exposure time 
+(see 5.1).
+In case this feature is not available, then for each illumination level, the ISO sensitivity value shall be set 
+as follows:
+a) Determine the handheld limit exposure time.
+b) Set ISO sensitivity value such that exposure time shall not exceed the handheld limit exposure time.
+4.2.6 White balance
+The white balance shall be set to automatic.
+ 
+4 © ISO 2018 – All rights reserved
+iTeh STANDARD PREVIEW
+(standards.iteh.ai)
+ISO 19093:2018
+https://standards.iteh.ai/catalog/standards/sist/d0505cb4-a940-4f16-9ead-
+c9a67646ac52/iso-19093-2018
+
+--- PDF PAGE 11 ---
+ 
+ISO 19093:2018(E)
+4.2.7 Flash
+No flash or camera built-in light sources shall be used or switched on. For cameras where these cannot 
+be switched off, this test is generally not applicable. In some cases, it can be possible to cover the built-
+in light sources and perform the test.
+4.2.8 Noise reduction
+The noise reduction shall be set to the default level.
+4.2.9 Exposure mode
+Where available, the camera shall be set to auto-program mode. The exposure shall be determined and 
+set by the camera without any exposure compensation.
+4.2.10 Scene and capture modes
+The balancing of the different image quality/image processing parameters in a camera can vary with 
+a specific scene mode (low-light mode, portrait mode, landscape mode, etc.) or capture mode (high 
+dynamic range (HDR), noise reduction mode, etc.). In case this document is used to compare the modes 
+of a camera or to compare cameras set to a specific mode, the modes need to be mentioned together 
+with the results.
+4.3 Capturing a reference image
+For the low-light performance, some measurements need to be defined relative to the performance 
+under bright light conditions. In order to do this, a reference image needs to be captured at a relatively 
+high illumination level on the chart plane. An image captured at an illumination level that should be 
+≥1 000 lx and shall be >500 lx is used to determine all required reference image quality levels.
+NOTE Chroma decrease is evaluated relative to the reference image, and these relative evaluation metrics 
+are based on the assumption that respective reference images are similar. Deviations among the reference 
+images will lead to wrong evaluations.
+4.4 Capture of the test images
+4.4.1 Illumination level
+Above a chart illumination level of 100 lx, most cameras deliver acceptable images. After taking the 
+reference image, the illumination can be reduced to 100 lx as the starting point for the test images 
+and then be reduced in steps further down. Tests shall be performed with multiple illumination levels. 
+A suggestion for the steps is to use illumination levels of 50 lx, 25 lx 12,5 lx, 6 lx, 3 lx, 1,5 lx, 0,75 lx, 
+0,38 lx, 0,19 lx, etc.
+The test range of illumination level shall be predetermined to measure low-light performance with 
+all the camera performance aspects described in Clause 5. For example, even when the exposure time 
+reaches the handheld limit exposure time, the illumination level may be further reduced to measure 
+other performance aspects within the predetermined range.
+4.4.2 Best image selection
+A series of at least four images shall be captured at each light level and the image with the highest 
+limiting resolution (frequency at 10 % modulation) in the centre shall be used for evaluation.
+For the selected best image at each light level, all of the mentioned image quality criteria need to be 
+evaluated and reported in a table as described in the reporting of the results (see Clause 6).
+ 
+© ISO 2018 – All rights reserved 5
+iTeh STANDARD PREVIEW
+(standards.iteh.ai)
+ISO 19093:2018
+https://standards.iteh.ai/catalog/standards/sist/d0505cb4-a940-4f16-9ead-
+c9a67646ac52/iso-19093-2018

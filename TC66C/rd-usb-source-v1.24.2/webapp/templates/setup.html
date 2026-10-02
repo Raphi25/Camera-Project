@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+{% block content %}
+    <form action="" method="post" style="max-width:400px">
+        <div class="form-group">
+            <label class="control-label" for="theme">Theme</label>
+            <select class="form-control" id="theme" name="theme">
+                <option value="light"{% if setup["theme"] == "light" %} selected{% endif %}>Light</option>
+                <option value="dark"{% if setup["theme"] == "dark" %} selected{% endif %}>Dark</option>
+                <option value="midnight"{% if setup["theme"] == "midnight" %} selected{% endif %}>Midnight</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="auto_connect">Connect automatically</label>
+            <select class="form-control" id="auto_connect" name="auto_connect">
+                <option value="no"{% if setup["auto_connect"] == "no" %} selected{% endif %}>No</option>
+                <option value="yes"{% if setup["auto_connect"] == "yes" %} selected{% endif %}>Yes</option>
+            </select>
+            <div class="help-block">
+                Automatically connect to previously connected device when this application launches.
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="timeout">Timeout (in seconds)</label>
+            <input type="number" class="form-control" id="timeout" name="timeout" value="{{ setup["timeout"] }}" />
+            <div class="help-block">
+                How long to wait before giving up. Set to 0 to wait indefinitely.
+                Default {{ default_timeout }} seconds.
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="retry_count">Number of retries</label>
+            <input type="number" class="form-control" id="retry_count" name="retry_count" value="{{ setup["retry_count"] }}" />
+            <div class="help-block">
+                How many times to retry operation before giving up. Set to 0 to retry indefinitely.
+                Default: {{ default_retry_count }} times.
+            </div>
+        </div>
+        <div class="alert alert-info">
+            Note: Both timeout and number of retries work together.
+            If one run-outs before the other, the connection is terminated.
+        </div>
+        <div class="form-group">
+            <button type="submit" name="do" class="btn btn-default">
+                Save
+            </button>
+        </div>
+    </form>
+{% endblock %}
