@@ -7,6 +7,11 @@ Genopladeligt batteri, 3.7 V, Litium-polymer, 1.8 Ah;Lithium Battery;144-9405;RS
 Adafruit DS3231 Precision RTC Breakout;RTC;;Amazon;149,49;1;149,49
 6DOF IMU Sensor;IMU;SEN0693;DFRobot;43,95;1;43,95
 Wireless Charging Module 5V/1A;Wireless Charging Module;DFR0362;DFRobot;43,95;1;43,95
+PHR 2;Female Straight Connector Cap 2 mm Pitch, 2-Pole, 1 Row;820-1466;RS;5,9;1;5,9
 Magnets;Neodymium magnet 0.39 kg, W/D: 5 mm;219-2248;RS;75,17;1;75,17
 Male-Male Wires;;;;;6;
-;;;;;TOTAL:;346,95
+Micro SD Card;;;;;1;
+USB-C Cable;;;;;1;
+3V Coin Battery;;;;;1;
+;;;;;TOTAL:;768,93
+>>>>>>> 4e19fb1 (Add BOMs, Data for Blur and IMU tests and KiCad 8.0 PCB schematics and layout)

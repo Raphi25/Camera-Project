@@ -1,0 +1,5 @@
+profile_name,speed_percentile,measured_speed_deg_s,turn_angle_percentile,measured_turn_angle_deg,recommended_amplitude_deg,recommended_period_ms,c_initializer
+body_p25_a10,25,15.386,25,16.258,10,4189,"{""body_p25_a10"",10,15.0f,4189},"
+body_p50_a20,50,31.364,50,39.764,20,4189,"{""body_p50_a20"",20,30.0f,4189},"
+body_p75_a45,75,54.127,75,92.276,45,5141,"{""body_p75_a45"",45,55.0f,5141},"
+body_p95_a60,95,102.389,95,119.307,60,3770,"{""body_p95_a60"",60,100.0f,3770},"
