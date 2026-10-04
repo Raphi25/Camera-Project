@@ -1382,7 +1382,9 @@ static void command_handle_status(app_context_t *ctx, char *cmd, const char *arg
         }
         xSemaphoreGive(s_rtc_mutex);
     }
-    command_reply_printf(reply, "STATUS state=%s transitions=%u auto=%d paused=%d transfer=%d camera=%d camera_mode=%s camera_fps=%u forced_awake=%d usb_detect=%d comms=%s ble=%d c6_bridge=%d schedule=%d burst=%d start=%s stop=%s days=%u start_day=%d time=%s interval_ms=%u sd=%d otg=%d otg_ready=%d\n",
+    scene_stats_t scene = {0};
+    bool scene_valid = camera_get_scene_stats(&scene);
+    command_reply_printf(reply, "STATUS state=%s transitions=%u auto=%d paused=%d transfer=%d camera=%d camera_mode=%s camera_fps=%u forced_awake=%d usb_detect=%d comms=%s ble=%d c6_bridge=%d schedule=%d burst=%d start=%s stop=%s days=%u start_day=%d time=%s interval_ms=%u sd=%d otg=%d otg_ready=%d scene=%s scene_avg_luma=%u scene_dark_pct=%u\n",
            program_state_name(program_state), (unsigned)transition_count,
            app_controller_is_enabled() ? 1 : 0, app_controller_is_paused() ? 1 : 0,
            media_transfer_is_active() ? 1 : 0, app_controller_is_camera_ready() ? 1 : 0,
@@ -1400,7 +1402,9 @@ static void command_handle_status(app_context_t *ctx, char *cmd, const char *arg
            (unsigned)auto_snap_interval_ms(), sd_storage_is_mounted() ? 1 : 0,
            usb_msc_is_connected() ? 1 : 0,
            (usb_msc_is_connected() && ctx != NULL && ctx->card != NULL &&
-            (sd_storage_is_mounted() || usb_msc_is_active())) ? 1 : 0);
+            (sd_storage_is_mounted() || usb_msc_is_active())) ? 1 : 0,
+           scene_valid ? (scene.is_dark ? "dark" : "light") : "unknown",
+           (unsigned)scene.avg_luma, (unsigned)scene.dark_pct);
 }
 
 static void command_apply_schedule(app_context_t *ctx, const char *args, bool start_now, command_reply_t *reply)
@@ -1483,6 +1487,11 @@ static void command_handle_start_program(app_context_t *ctx, char *cmd, const ch
         app_post(APP_EVENT_SET_FORCED_AWAKE, false);
     } else {
         app_post(APP_EVENT_SET_FORCED_AWAKE, true);
+        esp_err_t summary_err = daily_summary_begin_session();
+        if (summary_err != ESP_OK) {
+            ESP_LOGW(TAG, "Could not initialize session summary: %s",
+                     esp_err_to_name(summary_err));
+        }
     }
     auto_snap_set_enabled(true);
     program_publish(PROGRAM_EVENT_START);
@@ -1550,12 +1559,30 @@ static void command_handle_sd_status(app_context_t *ctx, char *cmd, const char *
 
 static void command_handle_stop_program(app_context_t *ctx, char *cmd, const char *args, command_reply_t *reply)
 {
-    (void)reply; (void)ctx; (void)cmd; (void)args;
+    (void)ctx; (void)cmd; (void)args;
     auto_snap_set_enabled(false);
     program_publish(PROGRAM_EVENT_STOP);
     app_post(APP_EVENT_SET_PAUSED, true);
     camera_set_capture_paused(true);
-    command_reply_printf(reply, "OK STOP_PROGRAM\n");
+
+    esp_err_t idle_err = camera_wait_for_idle(15000);
+    if (idle_err != ESP_OK) {
+        ESP_LOGW(TAG, "Manual stop timed out waiting for media writes: %s",
+                 esp_err_to_name(idle_err));
+        command_reply_printf(reply, "OK STOP_PROGRAM summary=not_written idle_%s\n",
+                             esp_err_to_name(idle_err));
+        return;
+    }
+
+    esp_err_t summary_err = daily_summary_write_file("manual stop", s_run_schedule_days);
+    if (summary_err != ESP_OK) {
+        ESP_LOGW(TAG, "Manual-stop summary failed: %s", esp_err_to_name(summary_err));
+        command_reply_printf(reply, "OK STOP_PROGRAM summary=error_%s\n",
+                             esp_err_to_name(summary_err));
+        return;
+    }
+
+    command_reply_printf(reply, "OK STOP_PROGRAM summary=written\n");
 }
 
 static void command_handle_wake_up(app_context_t *ctx, char *cmd, const char *args, command_reply_t *reply)

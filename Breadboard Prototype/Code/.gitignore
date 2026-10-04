@@ -22,3 +22,5 @@ gui_settings_store.json
 *.bin
 *.elf
 *.map
+
+.codeatlas/

@@ -41,10 +41,10 @@ static void scene_classifier_apply(scene_classifier_t *classifier, uint32_t avg_
     bool is_bright = (avg_luma >= SCENE_OFF_AVG_LUMA_THRESHOLD) &&
                      (dark_pct <= SCENE_OFF_DARK_PIXEL_PERCENT_THRESHOLD);
     if (is_dark) {
-        classifier->dark_count++;
+        if (classifier->dark_count < SCENE_CONSEC_DARK_FRAMES_TO_ON) classifier->dark_count++;
         classifier->bright_count = 0;
     } else if (is_bright) {
-        classifier->bright_count++;
+        if (classifier->bright_count < SCENE_CONSEC_BRIGHT_FRAMES_TO_OFF) classifier->bright_count++;
         classifier->dark_count = 0;
     } else {
         classifier->dark_count = 0;
@@ -120,6 +120,29 @@ void scene_classifier_update_from_rgb565(scene_classifier_t *classifier, const u
         uint32_t green = ((pixel >> 5) & 0x3FU) * 255U / 63U;
         uint32_t blue = (pixel & 0x1FU) * 255U / 31U;
         uint32_t luma = (77U * red + 150U * green + 29U * blue) >> 8;
+        luma_sum += luma;
+        dark_pixels += luma <= SCENE_DARK_PIXEL_LUMA_THRESHOLD ? 1U : 0U;
+        pixel_count++;
+    }
+    if (pixel_count == 0) return;
+    scene_classifier_apply(classifier, (uint32_t)(luma_sum / pixel_count),
+                           (dark_pixels * 100U) / pixel_count, stats);
+}
+
+void scene_classifier_update_from_rgb888(scene_classifier_t *classifier, const uint8_t *rgb888,
+                                         size_t rgb888_size, scene_stats_t *stats)
+{
+    if (classifier == NULL || rgb888 == NULL || rgb888_size < 3) return;
+
+    uint64_t luma_sum = 0;
+    uint32_t pixel_count = 0;
+    uint32_t dark_pixels = 0;
+    size_t pixel_total = rgb888_size / 3;
+    /* V4L2 RGB24 is packed R,G,B. Use the same sampling density and BT.601
+     * luma approximation as RGB565, without reducing color precision first. */
+    for (size_t i = 0; i < pixel_total; i += SCENE_ANALYSIS_PAIR_STRIDE) {
+        const uint8_t *pixel = rgb888 + i * 3;
+        uint32_t luma = (77U * pixel[0] + 150U * pixel[1] + 29U * pixel[2]) >> 8;
         luma_sum += luma;
         dark_pixels += luma <= SCENE_DARK_PIXEL_LUMA_THRESHOLD ? 1U : 0U;
         pixel_count++;

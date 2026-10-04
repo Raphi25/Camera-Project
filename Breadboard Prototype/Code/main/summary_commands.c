@@ -105,8 +105,7 @@ void summary_command_list(app_context_t *ctx, char *cmd, const char *args,
 
     struct dirent *entry = NULL;
     while ((entry = readdir(dir)) != NULL) {
-        if (!is_valid_summary_name(entry->d_name) &&
-            !is_orientation_stage_name(entry->d_name)) {
+        if (!is_valid_summary_name(entry->d_name)) {
             continue;
         }
 
@@ -186,7 +185,8 @@ void summary_command_delete_all(app_context_t *ctx, char *cmd, const char *args,
     int failed = 0;
     struct dirent *entry = NULL;
     while ((entry = readdir(dir)) != NULL) {
-        if (!is_valid_summary_name(entry->d_name)) {
+        if (!is_valid_summary_name(entry->d_name) &&
+            !is_orientation_stage_name(entry->d_name)) {
             continue;
         }
 

@@ -11,6 +11,7 @@
 #include "device_settings.h"
 #include "esp_err.h"
 #include "imu_orientation.h"
+#include "scene_classifier.h"
 
 /*
  * Optional ESP32-C6 BLE control bridge.
@@ -72,10 +73,15 @@ esp_err_t camera_print_v4l2_formats(void);
  * without coupling this module to the RTC driver. */
 void camera_set_timestamp_provider(camera_timestamp_provider_t provider);
 
-/* Sample posture at capture time and persist it after the image is saved. */
+/* Capture-time IMU callback. The resulting posture is appended to the shared
+ * orientation text log only after the matching image has committed to SD. */
 void camera_set_orientation_provider(camera_orientation_provider_t provider);
 
 /* Optional callbacks for power/battery accounting. They run from camera tasks,
  * so implementations should only update counters and avoid blocking I/O. */
 void camera_set_metrics_callbacks(camera_capture_metrics_cb_t capture_cb,
                                   camera_save_metrics_cb_t save_cb);
+
+/* Snapshot the last captured frame's scene analysis. False before the first
+ * analysed frame or after camera shutdown; does not wait for capture to finish. */
+bool camera_get_scene_stats(scene_stats_t *out_stats);

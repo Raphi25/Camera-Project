@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
+#include <stdatomic.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -100,7 +101,10 @@ static size_t s_jpeg_buf_size;
 static QueueHandle_t s_save_queue;
 static TaskHandle_t s_writer_task;
 static SemaphoreHandle_t s_capture_mutex;
-static volatile bool s_writer_busy;
+/* Count jobs before enqueueing, through completion of orientation/metrics.
+ * Queue length alone has a gap between dequeue and the writer becoming busy. */
+static atomic_uint s_pending_saves;
+static esp_err_t wait_for_pending_saves(uint32_t timeout_ms);
 static volatile bool s_capture_paused;
 static volatile bool s_burst_capture_active;
 static bool s_streaming;
@@ -109,7 +113,48 @@ static bool s_3a_settled;
 static uint32_t s_sequence;
 static scene_classifier_t s_scene_classifier;
 static scene_stats_t s_scene_stats;
+static bool s_scene_stats_valid;
+static portMUX_TYPE s_scene_stats_lock = portMUX_INITIALIZER_UNLOCKED;
 static esp_timer_handle_t s_capture_led_timer;
+
+bool camera_get_scene_stats(scene_stats_t *out_stats)
+{
+    if (!out_stats) return false;
+    portENTER_CRITICAL(&s_scene_stats_lock);
+    *out_stats = s_scene_stats;
+    bool valid = s_scene_stats_valid;
+    portEXIT_CRITICAL(&s_scene_stats_lock);
+    return valid;
+}
+
+static void reset_scene_stats(void)
+{
+    portENTER_CRITICAL(&s_scene_stats_lock);
+    memset(&s_scene_stats, 0, sizeof(s_scene_stats));
+    s_scene_stats_valid = false;
+    portEXIT_CRITICAL(&s_scene_stats_lock);
+}
+
+/* Called while the capture mutex owns the DMA buffer. Analyse outside the
+ * status snapshot lock so command polling only locks for the small copy. */
+static void analyse_captured_scene(const uint8_t *frame, size_t size)
+{
+    if (!frame) return;
+    scene_stats_t stats = {0};
+    if (s_capture_fourcc == V4L2_PIX_FMT_RGB24 && size >= 3) {
+        scene_classifier_update_from_rgb888(&s_scene_classifier, frame, size, &stats);
+    } else if (s_capture_fourcc == V4L2_PIX_FMT_RGB565 && size >= 2) {
+        scene_classifier_update_from_rgb565(&s_scene_classifier, frame, size, &stats);
+    } else if (s_capture_fourcc == V4L2_PIX_FMT_UYVY && size >= 4) {
+        scene_classifier_update_from_uyvy(&s_scene_classifier, frame, size, &stats);
+    } else {
+        return;
+    }
+    portENTER_CRITICAL(&s_scene_stats_lock);
+    s_scene_stats = stats;
+    s_scene_stats_valid = true;
+    portEXIT_CRITICAL(&s_scene_stats_lock);
+}
 
 static void capture_led_off(void *arg)
 {
@@ -389,7 +434,6 @@ static void writer_task(void *arg)
         if (xQueueReceive(s_save_queue, &job, pdMS_TO_TICKS(1000)) != pdTRUE) {
             continue;
         }
-        s_writer_busy = true;
 
         int64_t encrypt_start_us = esp_timer_get_time();
         uint8_t plain_digest[32];
@@ -426,7 +470,7 @@ static void writer_task(void *arg)
                 s_save_metrics_cb(&metrics);
             }
             resume_after_write();
-            s_writer_busy = false;
+            atomic_fetch_sub(&s_pending_saves, 1U);
             continue;
         }
 
@@ -476,13 +520,14 @@ static void writer_task(void *arg)
             s_save_metrics_cb(&metrics);
         }
         resume_after_write();
-        s_writer_busy = false;
+        atomic_fetch_sub(&s_pending_saves, 1U);
         watchdog_supervisor_beat(heartbeat);
     }
 }
 
 esp_err_t camera_init(i2c_master_bus_handle_t shared_i2c_bus)
 {
+    reset_scene_stats();
     ESP_RETURN_ON_ERROR(capture_led_init(), TAG, "capture LED init");
     ESP_RETURN_ON_ERROR(scene_classifier_init(&s_scene_classifier), TAG,
                         "scene classifier init");
@@ -606,6 +651,7 @@ esp_err_t camera_init(i2c_master_bus_handle_t shared_i2c_bus)
 
 void camera_deinit(void)
 {
+    reset_scene_stats();
     if (s_capture_led_timer) {
         (void)esp_timer_stop(s_capture_led_timer);
         (void)esp_timer_delete(s_capture_led_timer);
@@ -695,7 +741,9 @@ static esp_err_t enqueue_encoded_jpeg(const uint8_t *jpeg_data, size_t jpeg_size
                        : SD_CAPTURE_DIR "/cap_%06" PRIu32 ".jpg",
                  burst ? burst_index : s_sequence);
     }
+    atomic_fetch_add(&s_pending_saves, 1U);
     if (xQueueSend(s_save_queue, &job, pdMS_TO_TICKS(1000)) != pdTRUE) {
+        atomic_fetch_sub(&s_pending_saves, 1U);
         heap_caps_free(copy);
         return ESP_ERR_TIMEOUT;
     }
@@ -707,6 +755,10 @@ esp_err_t camera_capture_once(void)
 {
     if (s_capture_paused || !s_capture_mutex) return ESP_ERR_INVALID_STATE;
     if (xSemaphoreTake(s_capture_mutex, pdMS_TO_TICKS(1000)) != pdTRUE) return ESP_ERR_TIMEOUT;
+    if (s_capture_paused) {
+        xSemaphoreGive(s_capture_mutex);
+        return ESP_ERR_INVALID_STATE;
+    }
     int64_t started = esp_timer_get_time();
 
     /* The capture lock serializes manual snaps, auto snaps, and transfer pauses.
@@ -729,15 +781,7 @@ esp_err_t camera_capture_once(void)
          * never retains ownership. */
         esp_cache_msync(s_video_buf[frame.index], frame.bytesused,
                         ESP_CACHE_MSYNC_FLAG_DIR_M2C);
-        if (s_capture_fourcc == V4L2_PIX_FMT_UYVY) {
-            scene_classifier_update_from_uyvy(&s_scene_classifier,
-                                              s_video_buf[frame.index], frame.bytesused,
-                                              &s_scene_stats);
-        } else if (s_capture_fourcc == V4L2_PIX_FMT_RGB565) {
-            scene_classifier_update_from_rgb565(&s_scene_classifier,
-                                                s_video_buf[frame.index], frame.bytesused,
-                                                &s_scene_stats);
-        }
+        analyse_captured_scene(s_video_buf[frame.index], frame.bytesused);
     }
     /* Rev-1 P4 cannot reliably run CSI/ISP and JPEG GDMA concurrently. Keep
      * the completed MMAP frame, but stop capture before JPEG reads it. */
@@ -807,6 +851,10 @@ esp_err_t camera_capture_burst(uint32_t duration_ms, uint32_t *captured_count)
     if (xSemaphoreTake(s_capture_mutex, pdMS_TO_TICKS(1000)) != pdTRUE) {
         return ESP_ERR_TIMEOUT;
     }
+    if (s_capture_paused) {
+        xSemaphoreGive(s_capture_mutex);
+        return ESP_ERR_INVALID_STATE;
+    }
     const int64_t started_us = esp_timer_get_time();
     burst_raw_frame_t raw[CAMERA_BURST_IMAGE_COUNT] = {0};
     uint32_t count = 0;
@@ -836,15 +884,7 @@ esp_err_t camera_capture_burst(uint32_t duration_ms, uint32_t *captured_count)
          * single captures. */
         esp_cache_msync(s_video_buf[frame.index], frame.bytesused,
                         ESP_CACHE_MSYNC_FLAG_DIR_M2C);
-        if (s_capture_fourcc == V4L2_PIX_FMT_UYVY) {
-            scene_classifier_update_from_uyvy(&s_scene_classifier,
-                                              s_video_buf[frame.index], frame.bytesused,
-                                              &s_scene_stats);
-        } else if (s_capture_fourcc == V4L2_PIX_FMT_RGB565) {
-            scene_classifier_update_from_rgb565(&s_scene_classifier,
-                                                s_video_buf[frame.index], frame.bytesused,
-                                                &s_scene_stats);
-        }
+        analyse_captured_scene(s_video_buf[frame.index], frame.bytesused);
         capture_led_blink();
         ++count;
     }
@@ -904,7 +944,8 @@ esp_err_t camera_capture_burst(uint32_t duration_ms, uint32_t *captured_count)
     /* Burst phase 3 - persistence. The writer owns each queued JPEG copy;
      * waiting here makes a successful burst mean every image reached the SD
      * card before capture resumes. */
-    if (err == ESP_OK) err = camera_wait_for_idle(30000);
+    /* The burst already owns s_capture_mutex; only drain its writer jobs. */
+    if (err == ESP_OK) err = wait_for_pending_saves(30000);
     s_burst_capture_active = false;
     if (!s_capture_paused) {
         esp_err_t resume_err = stream_set(true);
@@ -923,16 +964,39 @@ esp_err_t camera_capture_burst(uint32_t duration_ms, uint32_t *captured_count)
     return err;
 }
 
-esp_err_t camera_wait_for_idle(uint32_t timeout_ms)
+static esp_err_t wait_for_pending_saves(uint32_t timeout_ms)
 {
     /* Used before deep sleep and serial media transfer: both need a quiet SD
      * card and no pending encryption/write job. */
     TickType_t start = xTaskGetTickCount();
-    while (s_writer_busy || (s_save_queue && uxQueueMessagesWaiting(s_save_queue))) {
+    while (atomic_load(&s_pending_saves) != 0U) {
         if (timeout_ms && xTaskGetTickCount() - start >= pdMS_TO_TICKS(timeout_ms)) return ESP_ERR_TIMEOUT;
         vTaskDelay(pdMS_TO_TICKS(20));
     }
     return ESP_OK;
+}
+
+esp_err_t camera_wait_for_idle(uint32_t timeout_ms)
+{
+    /* Stop/export/sleep must also wait for acquisition and encoding: a burst
+     * may not have queued any JPEGs yet. Callers pause capture before handoff. */
+    TickType_t start = xTaskGetTickCount();
+    if (s_capture_mutex && xSemaphoreTake(s_capture_mutex,
+            timeout_ms ? pdMS_TO_TICKS(timeout_ms) : portMAX_DELAY) != pdTRUE) {
+        return ESP_ERR_TIMEOUT;
+    }
+    uint32_t remaining_ms = timeout_ms;
+    if (timeout_ms) {
+        uint32_t elapsed_ms = (xTaskGetTickCount() - start) * portTICK_PERIOD_MS;
+        if (elapsed_ms >= timeout_ms) {
+            if (s_capture_mutex) xSemaphoreGive(s_capture_mutex);
+            return ESP_ERR_TIMEOUT;
+        }
+        remaining_ms -= elapsed_ms;
+    }
+    esp_err_t err = wait_for_pending_saves(remaining_ms);
+    if (s_capture_mutex) xSemaphoreGive(s_capture_mutex);
+    return err;
 }
 
 void camera_set_capture_paused(bool paused) { s_capture_paused = paused; }

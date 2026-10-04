@@ -99,7 +99,6 @@ The main strength of the software is clear ownership. The camera module captures
 - `media_utils.py` validates local media, repairs MJPEG frame streams, and locates FFmpeg for optional video conversion.
 - `presentation_services.py` converts raw protocol replies into clear text and view models that the GUI can display.
 - `protocol.py` parses protocol-negotiation replies and checks whether the connected firmware supports specific capabilities.
-- `pyside6_prototype.py` provides a simulated PySide6 interface prototype and does not control the real device or filesystem.
 - `settings_service.py` validates capture schedules and atomically saves the GUI's local settings.
 - `views.py` constructs the Tkinter widgets and connects them to behavior supplied by the main application.
 

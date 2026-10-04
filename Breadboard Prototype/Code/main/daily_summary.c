@@ -44,6 +44,24 @@ void daily_summary_init(daily_summary_time_provider_t time_provider)
     s_time_provider = time_provider;
 }
 
+esp_err_t daily_summary_begin_session(void)
+{
+    if (s_time_provider == NULL) return ESP_ERR_INVALID_STATE;
+
+    struct tm now = {0};
+    esp_err_t err = s_time_provider(&now);
+    if (err != ESP_OK) return err;
+
+    int32_t day = capture_scheduler_day_index(&now);
+    if (day < 0) return ESP_ERR_INVALID_RESPONSE;
+
+    daily_summary_reset(day);
+    portENTER_CRITICAL(&s_lock);
+    s_actual_start_min = now.tm_hour * 60 + now.tm_min;
+    portEXIT_CRITICAL(&s_lock);
+    return ESP_OK;
+}
+
 void daily_summary_reset(int32_t day_index)
 {
     portENTER_CRITICAL(&s_lock);
@@ -210,9 +228,9 @@ esp_err_t daily_summary_write_file(const char *reason, uint16_t configured_days)
     }
     err = sd_storage_atomic_commit(&atomic_file);
     if (err != ESP_OK) return err;
-    sd_storage_lock();
-    (void)unlink(orientation_stage_path);
-    sd_storage_unlock();
+    /* Keep the daily orientation journal: another manual stop or scheduled
+     * summary replaces this same report and must include earlier images too.
+     * SUMMARY_DELETE_ALL removes both reports and orientation journals. */
     ESP_LOGI(TAG, "Wrote daily summary: %s", path);
     return ESP_OK;
 }

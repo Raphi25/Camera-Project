@@ -11,6 +11,7 @@
 #include "device_settings.h"
 #include "esp_err.h"
 #include "imu_orientation.h"
+#include "scene_classifier.h"
 
 /*
  * Optional ESP32-C6 BLE control bridge.
@@ -80,3 +81,7 @@ void camera_set_orientation_provider(camera_orientation_provider_t provider);
  * so implementations should only update counters and avoid blocking I/O. */
 void camera_set_metrics_callbacks(camera_capture_metrics_cb_t capture_cb,
                                   camera_save_metrics_cb_t save_cb);
+
+/* Snapshot the last captured frame's scene analysis. False before the first
+ * analysed frame or after camera shutdown; does not wait for capture to finish. */
+bool camera_get_scene_stats(scene_stats_t *out_stats);

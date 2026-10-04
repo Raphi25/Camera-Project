@@ -1,6 +1,7 @@
 # ESP-IDF build output
 build/
 managed_components/
+dependencies.lock
 sdkconfig.old
 
 # Local Python environment and caches
@@ -16,11 +17,9 @@ gui_settings_store.json
 # Editor/local machine state
 .vscode/
 *.log
+.codeatlas/
 
 # Generated firmware artifacts, if copied outside build/
 *.bin
 *.elf
 *.map
-
-# Don't include bundled examples from ESP-IDF components
-components/espressif_esp_video/examples/

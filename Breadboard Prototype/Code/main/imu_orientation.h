@@ -25,6 +25,8 @@ typedef struct {
     bool valid;
 } imu_orientation_sample_t;
 
+/* Creates the IMU I2C bus, finds the BMI323 at 0x69 (open address pad) or 0x68
+ * (shorted pad), verifies its chip ID, and enables the accelerometer. */
 esp_err_t imu_orientation_init(imu_orientation_t *imu,
                                i2c_port_t i2c_port,
                                gpio_num_t sda_gpio,
@@ -33,5 +35,6 @@ esp_err_t imu_orientation_init(imu_orientation_t *imu,
 
 void imu_orientation_deinit(imu_orientation_t *imu);
 
+/* Capture one gravity-vector sample and convert it to a wearable posture. */
 esp_err_t imu_orientation_read(imu_orientation_t *imu,
                                imu_orientation_sample_t *sample);

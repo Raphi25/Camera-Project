@@ -10,6 +10,8 @@
 #include "nvs.h"
 #include "nvs_flash.h"
 #include "sc2336.h"
+#include "ov5647.h"
+#include "arducam_imx500.h"
 
 #define CAMERA_MODE_NVS_NAMESPACE "device"
 #define CAMERA_MODE_NVS_KEY       "camera_fps"
@@ -54,11 +56,16 @@ esp_err_t startup_init_camera_mode(void)
         return err;
     }
 
-    if (fps != 15 && fps != 45) {
+    /* Accept the older OV5647 mode values when upgrading either prototype. */
+    if (fps == 45) fps = 30;
+    if (fps == 15) fps = 25;
+    if (fps != 25 && fps != 30) {
         ESP_LOGW(TAG, "Invalid stored camera mode fps=%u; using NORMAL", fps);
         fps = 30;
     }
     ESP_RETURN_ON_ERROR(sc2336_set_boot_fps(fps), TAG, "select SC2336 boot mode");
+    ESP_RETURN_ON_ERROR(ov5647_set_boot_fps(fps), TAG, "select OV5647 boot mode");
+    ESP_RETURN_ON_ERROR(arducam_imx500_set_boot_fps(fps), TAG, "select IMX500 boot mode");
     s_camera_mode_fps = fps;
     ESP_LOGI(TAG, "Camera mode: %s (%u fps)", startup_camera_mode_name(fps), fps);
     return ESP_OK;

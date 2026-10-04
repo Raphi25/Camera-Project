@@ -38,7 +38,7 @@ flowchart LR
     Commands --> SD
 ```
 
-Most project-owned firmware is in `main/`. The Windows software is in `gui/`. The camera driver under `components/` and packages under `managed_components/` are supporting libraries.
+Most project-owned firmware is in `main/`. The Windows software is in `../../App/`. The camera driver under `components/` and packages under `managed_components/` are supporting libraries.
 
 ## 3. Design Patterns Used
 
@@ -251,7 +251,7 @@ This follows White's low-power principles: turn off unused subsystems, put the p
 
 ## 14. The Windows GUI
 
-The packaged application is `BreadboardCameraGUI.exe`, built from `gui/GUI.py` with PyInstaller. It uses Tkinter for the active interface. `pyside6_prototype.py` is an alternative prototype and is not the current packaged entry point.
+The packaged application is `BreadboardCameraGUI.exe`, built from `../../App/GUI.py` with PyInstaller. It uses Tkinter for the active interface.
 
 The GUI is divided into layers:
 

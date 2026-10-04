@@ -1,0 +1,8 @@
+.venv/
+build/
+__pycache__/
+*.py[cod]
+*.exe
+gui_password_store.json
+gui_settings_store.json
+.migration-backup/

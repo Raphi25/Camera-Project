@@ -1,0 +1,3 @@
+The camera application is shared at ../../App.
+Use Launch_GUI.cmd in this project to open it.
+Build_GUI_App.cmd rebuilds the shared executable for both projects.

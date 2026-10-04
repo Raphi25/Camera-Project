@@ -64,7 +64,7 @@ static int16_t little_endian_i16(const uint8_t *data)
 
 static int16_t raw_to_mg(int16_t raw)
 {
-    return (int16_t)(((int32_t)raw * 8000) / 32768);
+    return (int16_t)(((int32_t)raw * 2000) / 32768);
 }
 
 static int16_t mapped_axis(const int16_t sensor_mg[3], int axis, int sign)

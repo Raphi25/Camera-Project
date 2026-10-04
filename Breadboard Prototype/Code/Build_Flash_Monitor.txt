@@ -1,0 +1,16 @@
+Both projects now build with flash encryption disabled.
+Use the ESP-IDF 6.0.2 terminal:
+
+idf.py -B build build
+idf.py -B build -p COM5 flash
+idf.py -B build -p COM5 monitor
+
+These commands assume the board's hardware flash encryption is disabled.
+A previously encrypted board needs a separate, verified eFuse transition
+before plaintext firmware can boot. Changing sdkconfig does not change eFuses.
+The common partition table is at 0xc000; NVS starts at 0xd000.
+The development-board NVS address changed from 0xa000, so device settings and
+credentials at the old location are not migrated automatically by flashing.
+Export/decrypt existing SD media and back up device credentials before flashing
+the development board's new layout; newly generated credentials cannot decrypt
+media saved using the old credentials.

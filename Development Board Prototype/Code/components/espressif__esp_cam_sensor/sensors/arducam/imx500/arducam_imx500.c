@@ -47,6 +47,14 @@ struct imx500_cam {
 
 
 static const uint8_t s_imx500_exp_min = 0x02;
+static uint8_t s_imx500_boot_fps = 30;
+
+esp_err_t arducam_imx500_set_boot_fps(uint8_t fps)
+{
+    if (fps != 25 && fps != 30) return ESP_ERR_INVALID_ARG;
+    s_imx500_boot_fps = fps;
+    return ESP_OK;
+}
 static esp_cam_sensor_format_t *imx500_format_info;
 static size_t imx500_format_info_size;
 static esp_cam_sensor_isp_info_t *imx500_isp_info;
@@ -598,6 +606,31 @@ static void imx500_dump_format(esp_cam_sensor_format_t *format_info)
     ESP_LOGI(TAG, "--------------------------------");
 }
 
+/* The Arducam module owns its sensor timings. Use its documented control
+ * protocol, and reject unsupported/clamped rates instead of relabelling a
+ * 30 fps format as 25 fps without changing the hardware. */
+static esp_err_t imx500_apply_boot_fps(esp_cam_sensor_device_t *dev)
+{
+    uint32_t minimum, maximum, step, actual;
+    ESP_RETURN_ON_ERROR(imx500_write(dev->sccb_handle, IMX500_REG_CTRL_ID,
+                                    V4L2_CID_ARDUCAM_FRAME_RATE), TAG, "select frame rate control");
+    ESP_RETURN_ON_ERROR(imx500_wait_for_free(dev->sccb_handle, 5), TAG, "wait for frame rate control");
+    ESP_RETURN_ON_ERROR(imx500_read(dev->sccb_handle, IMX500_REG_CTRL_MIN, &minimum), TAG, "read minimum fps");
+    ESP_RETURN_ON_ERROR(imx500_read(dev->sccb_handle, IMX500_REG_CTRL_MAX, &maximum), TAG, "read maximum fps");
+    ESP_RETURN_ON_ERROR(imx500_read(dev->sccb_handle, IMX500_REG_CTRL_STEP, &step), TAG, "read fps step");
+    ESP_RETURN_ON_FALSE(s_imx500_boot_fps >= minimum && s_imx500_boot_fps <= maximum &&
+                       (!step || (s_imx500_boot_fps - minimum) % step == 0),
+                       ESP_ERR_NOT_SUPPORTED, TAG, "module does not support requested %u fps", s_imx500_boot_fps);
+    ESP_RETURN_ON_ERROR(imx500_write(dev->sccb_handle, IMX500_REG_CTRL_VALUE, s_imx500_boot_fps),
+                        TAG, "set frame rate");
+    ESP_RETURN_ON_ERROR(imx500_wait_for_free(dev->sccb_handle, 5), TAG, "wait for frame rate update");
+    ESP_RETURN_ON_ERROR(imx500_read_ctrl(dev, V4L2_CID_ARDUCAM_FRAME_RATE, &actual, IMX500_CTRL_VALUE),
+                        TAG, "verify frame rate");
+    ESP_RETURN_ON_FALSE(actual == s_imx500_boot_fps, ESP_ERR_NOT_SUPPORTED, TAG,
+                       "module returned %" PRIu32 " fps instead of %u", actual, s_imx500_boot_fps);
+    return ESP_OK;
+}
+
 static esp_err_t imx500_enum_format(esp_cam_sensor_device_t *dev)
 {
     uint32_t width, height;
@@ -674,14 +707,31 @@ static esp_err_t imx500_enum_format(esp_cam_sensor_device_t *dev)
             ESP_RETURN_ON_FALSE(ret == ESP_OK, ret, TAG, "IMX500_REG_FORMAT_WIDTH read failed");
             ret = imx500_read(dev->sccb_handle, IMX500_REG_FORMAT_HEIGHT, &height);
             ESP_RETURN_ON_FALSE(ret == ESP_OK, ret, TAG, "IMX500_REG_FORMAT_HEIGHT read failed");
-            ret = imx500_update_ctrl(dev, V4L2_CID_ARDUCAM_FRAME_RATE, (uint32_t *)&format_info.fps, IMX500_CTRL_DEF);
+            if (index == CONFIG_CAMERA_ARDUCAM_IMX500_MIPI_IF_FORMAT_INDEX_DEFAULT) {
+                ESP_RETURN_ON_ERROR(imx500_apply_boot_fps(dev), TAG, "apply selected boot frame rate");
+            }
+            /* fps is uint8_t: a uint32_t SCCB read must use a temporary. */
+            uint32_t frame_rate = 0;
+            ret = imx500_read_ctrl(dev, V4L2_CID_ARDUCAM_FRAME_RATE, &frame_rate, IMX500_CTRL_VALUE);
             ESP_RETURN_ON_FALSE(ret == ESP_OK, ret, TAG, "V4L2_CID_ARDUCAM_FRAME_RATE update failed");
-            ret = imx500_update_ctrl(dev, V4L2_CID_PIXEL_RATE, (uint32_t *)&isp_info.isp_v1_info.pclk, IMX500_CTRL_DEF);
+            ESP_RETURN_ON_FALSE(frame_rate > 0 && frame_rate <= UINT8_MAX, ESP_ERR_NOT_SUPPORTED,
+                               TAG, "invalid frame rate from module");
+            format_info.fps = (uint8_t)frame_rate;
+            uint32_t pixel_rate, vertical_blank, horizontal_blank;
+            ret = imx500_read_ctrl(dev, V4L2_CID_PIXEL_RATE, &pixel_rate, IMX500_CTRL_VALUE);
             ESP_RETURN_ON_FALSE(ret == ESP_OK, ret, TAG, "V4L2_CID_PIXEL_RATE update failed");
-            ret = imx500_update_ctrl(dev, V4L2_CID_VBLANK, (uint32_t *)&isp_info.isp_v1_info.vts, IMX500_CTRL_DEF);
+            ret = imx500_read_ctrl(dev, V4L2_CID_VBLANK, &vertical_blank, IMX500_CTRL_VALUE);
             ESP_RETURN_ON_FALSE(ret == ESP_OK, ret, TAG, "V4L2_CID_VBLANK update failed");
-            ret = imx500_update_ctrl(dev, V4L2_CID_HBLANK, (uint32_t *)&isp_info.isp_v1_info.hts, IMX500_CTRL_DEF);
+            ret = imx500_read_ctrl(dev, V4L2_CID_HBLANK, &horizontal_blank, IMX500_CTRL_VALUE);
             ESP_RETURN_ON_FALSE(ret == ESP_OK, ret, TAG, "V4L2_CID_HBLANK update failed");
+            ESP_RETURN_ON_FALSE(pixel_rate > 0 && pixel_rate <= INT32_MAX &&
+                               width <= INT32_MAX && height <= INT32_MAX &&
+                               horizontal_blank <= INT32_MAX - width &&
+                               vertical_blank <= INT32_MAX - height,
+                               ESP_ERR_NOT_SUPPORTED, TAG, "invalid module timing values");
+            isp_info.isp_v1_info.pclk = (int)pixel_rate;
+            isp_info.isp_v1_info.vts = (int)vertical_blank;
+            isp_info.isp_v1_info.hts = (int)horizontal_blank;
             ret = imx500_update_ctrl(dev, V4L2_CID_ANALOGUE_GAIN, (uint32_t *)&isp_info.isp_v1_info.gain_def, IMX500_CTRL_DEF);
             ESP_RETURN_ON_FALSE(ret == ESP_OK, ret, TAG, "V4L2_CID_ANALOGUE_GAIN update failed");
             ret = imx500_update_ctrl(dev, V4L2_CID_EXPOSURE, (uint32_t *)&isp_info.isp_v1_info.exp_def, IMX500_CTRL_DEF);
@@ -770,6 +820,9 @@ static esp_err_t imx500_set_format(esp_cam_sensor_device_t *dev, const esp_cam_s
     ret = imx500_write_array(dev->sccb_handle, (imx500_reginfo_t *)format->regs, format->regs_size);
     ESP_RETURN_ON_FALSE(ret == ESP_OK, ret, TAG, "imx500 write array failed");
     delay_ms(500);
+    ESP_RETURN_ON_ERROR(imx500_apply_boot_fps(dev), TAG, "restore frame rate after format selection");
+    ESP_RETURN_ON_FALSE(format->fps == s_imx500_boot_fps, ESP_ERR_NOT_SUPPORTED, TAG,
+                       "format timing metadata does not match selected frame rate");
 
     dev->cur_format = format;
     // init para

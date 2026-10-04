@@ -45,19 +45,19 @@ if CAMERA_OV5647
                 RAW10 color format at 1920x1080 resolution (FHD) with 30fps framerate.
                 Requires MIPI CSI-2 2-lane interface with 24MHz input clock.
 
-        config CAMERA_OV5647_MIPI_RAW10_1280X960_BINNING_45FPS
-            bool "MIPI 2-lane, 24M input, 1280x960 Binning 45fps, RAW10"
+        config CAMERA_OV5647_MIPI_RAW10_1280X960_BINNING_30FPS
+            bool "MIPI 2-lane, 24M input, 1280x960 Binning 30fps, RAW10"
             default n
             help
-                RAW10 color format at 1280x960 resolution (SXGA) with 45fps framerate.
+                RAW10 color format at 1280x960 resolution (SXGA) with 30fps framerate.
                 Requires MIPI CSI-2 2-lane interface with 24MHz input clock.
 
-        config CAMERA_OV5647_MIPI_RAW10_1280X960_BINNING_15FPS
-            bool "MIPI 2-lane, 24M input, 1280x960 Binning 15fps, RAW10 (low light)"
+        config CAMERA_OV5647_MIPI_RAW10_1280X960_BINNING_25FPS
+            bool "MIPI 2-lane, 24M input, 1280x960 Binning 25fps, RAW10 (low light)"
             default n
             help
                 Low-light RAW10 mode at 1280x960 using 2x2 binning and a
-                three-times-longer frame period for exposures up to about 67ms.
+                a 40ms frame period, compared with about 33ms in normal mode.
 
         config CAMERA_OV5647_MIPI_RAW12_1920X1080_30FPS
             bool "MIPI 2-lane, 24M input, 1920x1080 30fps, RAW12 (experimental)"
@@ -94,13 +94,13 @@ if CAMERA_OV5647
             bool "MIPI 2-lane, 24M input, 1920x1080 30fps, RAW10"
             depends on CAMERA_OV5647_MIPI_RAW10_1920X1080_30FPS
 
-        config CAMERA_OV5647_MIPI_DEFAULT_FMT_RAW10_1280X960_BINNING_45FPS
-            bool "MIPI 2-lane, 24M input, 1280x960 Binning 45fps, RAW10"
-            depends on CAMERA_OV5647_MIPI_RAW10_1280X960_BINNING_45FPS
+        config CAMERA_OV5647_MIPI_DEFAULT_FMT_RAW10_1280X960_BINNING_30FPS
+            bool "MIPI 2-lane, 24M input, 1280x960 Binning 30fps, RAW10"
+            depends on CAMERA_OV5647_MIPI_RAW10_1280X960_BINNING_30FPS
 
-        config CAMERA_OV5647_MIPI_DEFAULT_FMT_RAW10_1280X960_BINNING_15FPS
-            bool "MIPI 2-lane, 24M input, 1280x960 Binning 15fps, RAW10 (low light)"
-            depends on CAMERA_OV5647_MIPI_RAW10_1280X960_BINNING_15FPS
+        config CAMERA_OV5647_MIPI_DEFAULT_FMT_RAW10_1280X960_BINNING_25FPS
+            bool "MIPI 2-lane, 24M input, 1280x960 Binning 25fps, RAW10 (low light)"
+            depends on CAMERA_OV5647_MIPI_RAW10_1280X960_BINNING_25FPS
 
         config CAMERA_OV5647_MIPI_DEFAULT_FMT_RAW12_1920X1080_30FPS
             bool "MIPI 2-lane, 24M input, 1920x1080 30fps, RAW12"
@@ -113,8 +113,8 @@ if CAMERA_OV5647
         default 1 if CAMERA_OV5647_MIPI_DEFAULT_FMT_RAW8_800X640_50FPS
         default 2 if CAMERA_OV5647_MIPI_DEFAULT_FMT_RAW8_800X800_50FPS
         default 3 if CAMERA_OV5647_MIPI_DEFAULT_FMT_RAW10_1920X1080_30FPS
-        default 4 if CAMERA_OV5647_MIPI_DEFAULT_FMT_RAW10_1280X960_BINNING_45FPS
-        default 5 if CAMERA_OV5647_MIPI_DEFAULT_FMT_RAW10_1280X960_BINNING_15FPS
+        default 4 if CAMERA_OV5647_MIPI_DEFAULT_FMT_RAW10_1280X960_BINNING_30FPS
+        default 5 if CAMERA_OV5647_MIPI_DEFAULT_FMT_RAW10_1280X960_BINNING_25FPS
         default 6 if CAMERA_OV5647_MIPI_DEFAULT_FMT_RAW12_1920X1080_30FPS
         help
             Sets the default configuration for the MIPI CSI interface.

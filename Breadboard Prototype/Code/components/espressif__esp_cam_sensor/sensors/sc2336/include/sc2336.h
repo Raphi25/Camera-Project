@@ -25,7 +25,6 @@ extern "C" {
  */
 esp_cam_sensor_device_t *sc2336_detect(esp_cam_sensor_config_t *config);
 
-/** Select the compiled 1080p MIPI format used when SC2336 is detected. */
 esp_err_t sc2336_set_boot_fps(uint8_t fps);
 
 #ifdef __cplusplus

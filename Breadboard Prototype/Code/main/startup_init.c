@@ -9,29 +9,19 @@
 #include "freertos/task.h"
 #include "nvs.h"
 #include "nvs_flash.h"
-#include "ov5647.h"
 #include "sc2336.h"
+#include "ov5647.h"
+#include "arducam_imx500.h"
 
 #define CAMERA_MODE_NVS_NAMESPACE "device"
 #define CAMERA_MODE_NVS_KEY       "camera_fps"
 
 static const char *TAG = "startup_init";
-static uint8_t s_camera_mode_fps = 15;
-
-static esp_err_t apply_camera_mode(uint8_t ov5647_fps)
-{
-    const uint8_t sc2336_fps = ov5647_fps == 45 ? 30 : 25;
-
-    ESP_RETURN_ON_ERROR(ov5647_set_boot_fps(ov5647_fps), TAG,
-                        "select OV5647 boot mode");
-    ESP_RETURN_ON_ERROR(sc2336_set_boot_fps(sc2336_fps), TAG,
-                        "select SC2336 boot mode");
-    return ESP_OK;
-}
+static uint8_t s_camera_mode_fps = 30;
 
 const char *startup_camera_mode_name(uint8_t fps)
 {
-    return fps == 45 ? "NORMAL" : "LOW_LIGHT";
+    return fps == 30 ? "NORMAL" : "LOW_LIGHT";
 }
 
 uint8_t startup_camera_mode_fps(void)
@@ -55,7 +45,7 @@ esp_err_t startup_init_camera_mode(void)
 
     nvs_handle_t handle;
     esp_err_t err = nvs_open(CAMERA_MODE_NVS_NAMESPACE, NVS_READONLY, &handle);
-    uint8_t fps = 15;
+    uint8_t fps = 30;
     if (err == ESP_OK) {
         esp_err_t read_err = nvs_get_u8(handle, CAMERA_MODE_NVS_KEY, &fps);
         nvs_close(handle);
@@ -66,14 +56,18 @@ esp_err_t startup_init_camera_mode(void)
         return err;
     }
 
-    if (fps != 15 && fps != 45) {
-        ESP_LOGW(TAG, "Invalid stored camera mode fps=%u; using LOW_LIGHT", fps);
-        fps = 15;
+    /* Accept the older OV5647 mode values when upgrading either prototype. */
+    if (fps == 45) fps = 30;
+    if (fps == 15) fps = 25;
+    if (fps != 25 && fps != 30) {
+        ESP_LOGW(TAG, "Invalid stored camera mode fps=%u; using NORMAL", fps);
+        fps = 30;
     }
-    ESP_RETURN_ON_ERROR(apply_camera_mode(fps), TAG, "select sensor boot modes");
+    ESP_RETURN_ON_ERROR(sc2336_set_boot_fps(fps), TAG, "select SC2336 boot mode");
+    ESP_RETURN_ON_ERROR(ov5647_set_boot_fps(fps), TAG, "select OV5647 boot mode");
+    ESP_RETURN_ON_ERROR(arducam_imx500_set_boot_fps(fps), TAG, "select IMX500 boot mode");
     s_camera_mode_fps = fps;
-    ESP_LOGI(TAG, "Camera mode: %s (OV5647=%u fps, SC2336=%u fps, IMX500=30 fps)",
-             startup_camera_mode_name(fps), fps, fps == 45 ? 30 : 25);
+    ESP_LOGI(TAG, "Camera mode: %s (%u fps)", startup_camera_mode_name(fps), fps);
     return ESP_OK;
 }
 
@@ -86,7 +80,7 @@ static void restart_task(void *arg)
 
 esp_err_t startup_select_camera_mode(uint8_t fps)
 {
-    if (fps != 15 && fps != 45) {
+    if (fps != 25 && fps != 30) {
         return ESP_ERR_INVALID_ARG;
     }
 

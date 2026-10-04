@@ -11,7 +11,7 @@
 /* Central device settings. Change these values before rebuilding firmware. */
 
 /* Camera and image quality */
-#define CAMERA_OUTPUT_RGB888             0
+#define CAMERA_OUTPUT_RGB888             1
 #define CAMERA_JPEG_QUALITY              90
 #define CAMERA_JPEG_TIMEOUT_MS           30000
 #define CAMERA_STREAM_WARMUP_FRAMES      10
@@ -47,8 +47,10 @@
 #define RTC_I2C_SCL_GPIO                  GPIO_NUM_8
 #define RTC_I2C_PORT_SPEED_HZ             100000U
 
-/* BMI323 on its own I2C controller. INT pins are reserved for future event
- * handling; capture-time posture sampling currently uses polled acceleration. */
+/* BMI323 orientation mapping. Device +Y points toward the wearable's top and
+ * device +Z points out through the camera lens. Axis values are 0=X, 1=Y,
+ * 2=Z; change these mappings/signs after a physical six-position check if the
+ * breakout is mounted in another rotation. */
 #define IMU_DEVICE_X_SENSOR_AXIS           0
 #define IMU_DEVICE_X_SENSOR_SIGN           1
 #define IMU_DEVICE_Y_SENSOR_AXIS           1

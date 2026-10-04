@@ -118,7 +118,7 @@ The device accepts text commands for operations such as reading status, setting 
 
 USB and BLE carry data differently, but an **Adapter Pattern** gives both transports a common command interface. This avoids writing separate camera-control logic for each connection.
 
-The packaged Windows program is `BreadboardCameraGUI.exe`. It is built from `gui/GUI.py` and includes the required Python libraries. The GUI is also divided into clear parts: transports handle connections, services handle commands and downloads, protocol code checks incoming data, and the views display information to the user.
+The packaged Windows program is `BreadboardCameraGUI.exe`. It is built from `../../App/GUI.py` and includes the required Python libraries. The GUI is also divided into clear parts: transports handle connections, services handle commands and downloads, protocol code checks incoming data, and the views display information to the user.
 
 The GUI and firmware exchange version and capability information. This allows a newer GUI to avoid requesting a feature that an older firmware version does not support.
 

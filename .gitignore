@@ -28,3 +28,7 @@ gui_password_store.json
 gui_settings_store.json
 
 App.zip
+.codeatlas/
+.firmware-sync-backup/
+.codex-research/
+.migration-backup/

@@ -22,7 +22,7 @@ void command_reply_write(command_reply_t *reply, const char *data, size_t len)
 
 void command_reply_printf(command_reply_t *reply, const char *fmt, ...)
 {
-    char buffer[512];
+    char buffer[1024];
     va_list args;
     va_start(args, fmt);
     int len = vsnprintf(buffer, sizeof(buffer), fmt, args);

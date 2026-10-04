@@ -22,6 +22,9 @@ static const char *TAG = "imu_orientation";
 #define BMI323_I2C_DUMMY_BYTES    2
 #define BMI323_RW_TIMEOUT_MS      100
 
+/* ACC_CONF: 100 Hz, +/-2 g, ODR/4 bandwidth, 8-sample averaging, normal mode.
+ * The resulting gravity vector is stable while still following posture changes
+ * quickly enough for capture-time metadata. */
 static const uint8_t BMI323_ACCEL_CONFIG[2] = {0x88, 0x43};
 
 static esp_err_t read_registers(imu_orientation_t *imu, uint8_t reg,
@@ -30,6 +33,9 @@ static esp_err_t read_registers(imu_orientation_t *imu, uint8_t reg,
     if (imu == NULL || imu->dev == NULL || data == NULL || size == 0 || size > 8) {
         return ESP_ERR_INVALID_ARG;
     }
+
+    /* BMI323's I2C protocol returns two dummy bytes before register data.
+     * Request and discard them, matching Bosch's BMI3 SensorAPI framing. */
     uint8_t response[8 + BMI323_I2C_DUMMY_BYTES] = {0};
     esp_err_t err = i2c_master_transmit_receive(
         imu->dev, &reg, 1, response, size + BMI323_I2C_DUMMY_BYTES,
@@ -74,6 +80,9 @@ static const char *classify_orientation(int16_t x_mg, int16_t y_mg, int16_t z_mg
     const int32_t az = abs((int)z_mg);
     const int32_t magnitude_squared = ax * ax + ay * ay + az * az;
     int32_t dominant = ax;
+
+    /* A stationary gravity vector should be close to 1 g. Avoid assigning a
+     * confident posture during strong movement or an obviously bad sample. */
     if (magnitude_squared < (650 * 650) || magnitude_squared > (1350 * 1350)) {
         return "moving or indeterminate";
     }
@@ -82,6 +91,7 @@ static const char *classify_orientation(int16_t x_mg, int16_t y_mg, int16_t z_mg
     if (dominant < IMU_ORIENTATION_CARDINAL_THRESHOLD_MG) {
         return "tilted or moving";
     }
+
     if (dominant == ay) {
         return y_mg >= 0 ? "upright facing forwards"
                          : "upside down facing forwards";
@@ -99,6 +109,7 @@ static esp_err_t try_address(imu_orientation_t *imu, uint8_t address,
 {
     esp_err_t err = i2c_master_probe(imu->bus, address, BMI323_RW_TIMEOUT_MS);
     if (err != ESP_OK) return err;
+
     i2c_device_config_t device_config = {
         .dev_addr_length = I2C_ADDR_BIT_LEN_7,
         .device_address = address,
@@ -106,6 +117,7 @@ static esp_err_t try_address(imu_orientation_t *imu, uint8_t address,
     };
     ESP_RETURN_ON_ERROR(i2c_master_bus_add_device(imu->bus, &device_config, &imu->dev),
                         TAG, "add BMI323 I2C device");
+
     uint8_t chip_id[2] = {0};
     err = read_registers(imu, BMI323_REG_CHIP_ID, chip_id, sizeof(chip_id));
     if (err != ESP_OK || chip_id[0] != BMI323_CHIP_ID) {
@@ -115,6 +127,7 @@ static esp_err_t try_address(imu_orientation_t *imu, uint8_t address,
         imu->dev = NULL;
         return err == ESP_OK ? ESP_ERR_NOT_FOUND : err;
     }
+
     imu->address = address;
     return ESP_OK;
 }
@@ -130,6 +143,7 @@ esp_err_t imu_orientation_init(imu_orientation_t *imu,
         return ESP_ERR_INVALID_ARG;
     }
     memset(imu, 0, sizeof(*imu));
+
     i2c_master_bus_config_t bus_config = {
         .i2c_port = i2c_port,
         .sda_io_num = sda_gpio,
@@ -140,14 +154,18 @@ esp_err_t imu_orientation_init(imu_orientation_t *imu,
     };
     ESP_RETURN_ON_ERROR(i2c_new_master_bus(&bus_config, &imu->bus),
                         TAG, "create BMI323 I2C bus");
+
     esp_err_t err = try_address(imu, BMI323_ADDRESS_OPEN_PAD, i2c_speed_hz);
-    if (err != ESP_OK) err = try_address(imu, BMI323_ADDRESS_SHORT_PAD, i2c_speed_hz);
+    if (err != ESP_OK) {
+        err = try_address(imu, BMI323_ADDRESS_SHORT_PAD, i2c_speed_hz);
+    }
     if (err != ESP_OK) {
         ESP_LOGW(TAG, "BMI323 not found at 0x69 or 0x68");
         i2c_del_master_bus(imu->bus);
         imu->bus = NULL;
         return err;
     }
+
     err = write_registers(imu, BMI323_REG_ACC_CONF, BMI323_ACCEL_CONFIG,
                           sizeof(BMI323_ACCEL_CONFIG));
     if (err != ESP_OK) {
@@ -165,8 +183,12 @@ esp_err_t imu_orientation_init(imu_orientation_t *imu,
 void imu_orientation_deinit(imu_orientation_t *imu)
 {
     if (imu == NULL) return;
-    if (imu->dev != NULL) i2c_master_bus_rm_device(imu->dev);
-    if (imu->bus != NULL) i2c_del_master_bus(imu->bus);
+    if (imu->dev != NULL) {
+        i2c_master_bus_rm_device(imu->dev);
+    }
+    if (imu->bus != NULL) {
+        i2c_del_master_bus(imu->bus);
+    }
     memset(imu, 0, sizeof(*imu));
 }
 
@@ -177,17 +199,20 @@ esp_err_t imu_orientation_read(imu_orientation_t *imu,
     memset(sample, 0, sizeof(*sample));
     strlcpy(sample->status, "IMU status unavailable", sizeof(sample->status));
     if (imu == NULL || !imu->ready) return ESP_ERR_INVALID_STATE;
+
     uint8_t data[6] = {0};
     ESP_RETURN_ON_ERROR(read_registers(imu, BMI323_REG_ACC_DATA_X,
                                        data, sizeof(data)),
                         TAG, "read BMI323 acceleration");
     int16_t raw[3] = {
-        little_endian_i16(&data[0]), little_endian_i16(&data[2]),
+        little_endian_i16(&data[0]),
+        little_endian_i16(&data[2]),
         little_endian_i16(&data[4]),
     };
     if (raw[0] == INT16_MIN || raw[1] == INT16_MIN || raw[2] == INT16_MIN) {
         return ESP_ERR_INVALID_RESPONSE;
     }
+
     int16_t sensor_mg[3] = {
         raw_to_mg(raw[0]), raw_to_mg(raw[1]), raw_to_mg(raw[2]),
     };

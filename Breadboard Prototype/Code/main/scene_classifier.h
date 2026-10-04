@@ -21,3 +21,5 @@ esp_err_t scene_classifier_init(scene_classifier_t *classifier);
 void scene_classifier_update_from_uyvy(scene_classifier_t *classifier, const uint8_t *uyvy, size_t uyvy_size, scene_stats_t *stats);
 void scene_classifier_update_from_rgb565(scene_classifier_t *classifier, const uint8_t *rgb565,
                                          size_t rgb565_size, scene_stats_t *stats);
+void scene_classifier_update_from_rgb888(scene_classifier_t *classifier, const uint8_t *rgb888,
+                                         size_t rgb888_size, scene_stats_t *stats);

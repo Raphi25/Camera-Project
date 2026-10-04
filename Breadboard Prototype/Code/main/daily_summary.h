@@ -11,6 +11,7 @@
 typedef esp_err_t (*daily_summary_time_provider_t)(struct tm *out_time);
 
 void daily_summary_init(daily_summary_time_provider_t time_provider);
+esp_err_t daily_summary_begin_session(void);
 void daily_summary_reset(int32_t day_index);
 void daily_summary_ensure_day(const struct tm *now);
 esp_err_t daily_summary_note_start(void);

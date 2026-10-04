@@ -18,8 +18,8 @@ extern "C" {
 /**
  * @brief Select the 1280x960 boot format by frame rate.
  *
- * Call before sensor detection. Supported values are 15 (low light) and
- * 45 (normal). The selection remains active until the next software reset.
+ * Call before sensor detection. Supported values are 25 (low light) and
+ * 30 (normal). The selection remains active until the next software reset.
  */
 esp_err_t ov5647_set_boot_fps(uint8_t fps);
 

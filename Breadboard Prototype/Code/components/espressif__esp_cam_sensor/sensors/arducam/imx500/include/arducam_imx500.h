@@ -25,6 +25,9 @@ extern "C" {
  */
 esp_cam_sensor_device_t *arducam_imx500_detect(esp_cam_sensor_config_t *config);
 
+/** Select 30 fps (normal) or 25 fps (low light) before sensor detection. */
+esp_err_t arducam_imx500_set_boot_fps(uint8_t fps);
+
 #ifdef __cplusplus
 }
 #endif
