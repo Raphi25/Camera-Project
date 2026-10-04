@@ -2,7 +2,7 @@ Shared Camera App
 =================
 
 This folder contains the single desktop application used by both sibling
-firmware projects: Development Board Prototype 1 and Breadboard Prototype.
+firmware projects: Development Board Prototype and Breadboard Prototype.
 Select the connected board's COM port or BLE connection inside the app.
 The app negotiates firmware capabilities; no project selection is required.
 
