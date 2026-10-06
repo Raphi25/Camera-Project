@@ -288,7 +288,7 @@ def build_settings_page(
     ttk.Label(interval_row, text="seconds").pack(side=tk.LEFT, padx=(6, 0))
     ttk.Checkbutton(
         frame,
-        text="Take five back-to-back burst images each capture cycle",
+        text="Take three back-to-back burst images each capture cycle",
         variable=variables.burst_enabled,
     ).grid(row=11, column=0, columnspan=3, sticky="w", pady=(10, 0))
     ttk.Button(frame, text="Apply", command=actions.apply_schedule).grid(

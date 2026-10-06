@@ -149,7 +149,7 @@ def schedule_preview(
     burst_enabled: bool,
 ) -> str:
     """Describe a schedule without mutating settings or contacting the device."""
-    media_mode = "five back-to-back burst images" if burst_enabled else "one image"
+    media_mode = "three back-to-back burst images" if burst_enabled else "one image"
     if not enabled:
         return (
             "Schedule preview: daily run window disabled; Start Program captures "

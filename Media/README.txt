@@ -1,0 +1,1 @@
+This folder includes the images used in the markdown texts.
