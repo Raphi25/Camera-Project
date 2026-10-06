@@ -1,1 +1,0 @@
-This folder contains the STL files needed to construct the Case for the Development Board Prototype.

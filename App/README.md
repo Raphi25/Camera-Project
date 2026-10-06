@@ -22,4 +22,4 @@ Once project is detected, the Device status dashboard will show the device time,
 
 When clicking on Settings, certain parameters can be configured, such as mode of transport, Bluetooth name, Program schedule, and wheveer the device should be in normal mode or burst mode. Clicking Apply will confirm teh schedule.
 
-Password can also be changed. Password will needed to login and the transfer or deletion of imagesa and summaries.
+Password can also be changed. Password is needed to login and the transfer or deletion of imagesa and summaries.
