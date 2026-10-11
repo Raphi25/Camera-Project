@@ -15,3 +15,5 @@ The magnet should be able to fit into the central hole and the wireless coil nee
 Once that is done, resume the printing process.
 
 ![Resume print](../Media/PCB_Lid3.jpeg)
+
+Same process for the lid for the development board prototype.
