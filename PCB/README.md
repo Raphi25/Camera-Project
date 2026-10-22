@@ -2,7 +2,7 @@ This folder contains the Schematic, PCB design and BOM of the device, how to ord
 
 ![JLCPCB Order](../Media/JLC1.png)
 
-Open the folder that contains the production files to create the PCB (PCB->Project->production). Open the JLCPCB oder site, https://cart.jlcpcb.com/quote, and drag and drop the Project zip file that contains teh gerber files intp the gerber section. Select LeadFree HASL.
+Open the folder that contains the production files to create the PCB (PCB->Project->production). Open the JLCPCB oder site, https://cart.jlcpcb.com/quote, and drag and drop the Project zip file that contains the gerber files into the gerber section. Select LeadFree HASL.
 
 ![JLCPCB Order Gerbers](../Media/JLC2.png)
 

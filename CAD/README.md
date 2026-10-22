@@ -17,3 +17,11 @@ Once that is done, resume the printing process.
 ![Resume print](../Media/PCB_Lid3.jpeg)
 
 Same process for the lid for the development board prototype.
+
+To insert the Sliding Door, pause the print at around 83%, and place the sliding door into the slits. If the tolerances are too tight due to print warping or other causes, sand or cut the sides of the sliding door carefully until it fits. Don't sand or cut to much away, otherwise the door will be too loose.
+
+![Pause door print](../Media/SlidingDoor2.jpeg)
+
+Then resume print.
+
+![Resume door print](../Media/SlidingDoor1.jpeg)
