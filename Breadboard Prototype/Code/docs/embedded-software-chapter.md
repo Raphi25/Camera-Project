@@ -71,7 +71,7 @@ The active program and encrypted image format contain version information. This 
 
 The device accepts commands for reading status, setting the clock, taking pictures, changing schedules, and downloading files. USB and Bluetooth use the same command handlers through an adapter layer, so the main behavior does not have to be implemented twice.
 
-The packaged application is `BreadboardCameraGUI.exe`. It includes the required Python libraries and provides controls for the camera, schedule, clock, diagnostics, and media transfer. The GUI and firmware exchange version and capability information so they can avoid using unsupported features.
+The packaged application is `GUI.exe`. It includes the required Python libraries and provides controls for the camera, schedule, clock, diagnostics, and media transfer. The GUI and firmware exchange version and capability information so they can avoid using unsupported features.
 
 ## Fault Detection
 

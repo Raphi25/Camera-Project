@@ -251,7 +251,7 @@ This follows White's low-power principles: turn off unused subsystems, put the p
 
 ## 14. The Windows GUI
 
-The packaged application is `BreadboardCameraGUI.exe`, built from `../../App/GUI.py` with PyInstaller. It uses Tkinter for the active interface.
+The packaged application is `GUI.exe`, built from `../../App/GUI.py` with PyInstaller. It uses Tkinter for the active interface.
 
 The GUI is divided into layers:
 

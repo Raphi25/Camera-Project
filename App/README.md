@@ -5,7 +5,7 @@ This folder contains the single desktop application used by both sibling
 firmware projects: Development Board Prototype and Breadboard Prototype. It will also be the single desktop application used by PCA once its delivered and up and running.
 
 RUN
-Double-click Launch_GUI.cmd or BreadboardCameraGUI.exe. Python and ESP-IDF
+Double-click Launch_GUI.cmd or GUI.exe. Python and ESP-IDF
 are not required for the packaged executable. Both firmware projects also
 contain Launch_GUI.cmd shortcuts to this same application. On a fresh
 installation without a password store, the initial password is ChangeMe123!.
@@ -20,6 +20,6 @@ Once project is detected, the Device status dashboard will show the device time,
 
 ![GUI settings](../Media/GUI_Settings.png)
 
-When clicking on Settings, certain parameters can be configured, such as mode of transport, Bluetooth name, Program schedule, and wheveer the device should be in normal mode or burst mode. Clicking Apply will confirm teh schedule.
+When clicking on Settings, certain parameters can be configured, such as mode of transport, Bluetooth name, Program schedule, and wheveer the device should be in normal mode or burst mode. Clicking Apply will confirm the schedule.
 
-Password can also be changed. Password is needed to login and the transfer or deletion of imagesa and summaries.
+Password can also be changed. Password is needed to login and the transfer or deletion of images and summaries.

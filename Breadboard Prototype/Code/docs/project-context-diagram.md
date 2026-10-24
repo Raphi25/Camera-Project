@@ -9,7 +9,7 @@ This document describes the source and configuration in this workspace. The syst
 ```mermaid
 flowchart LR
     user["User"]
-    pc["Windows camera application<br/>BreadboardCameraGUI / GUI.py"]
+    pc["Windows camera application<br/>GUI.exe / GUI.py"]
     files[("PC files<br/>Images, summaries, settings, password hash")]
     board["ESP32-P4 camera firmware<br/>ESP-IDF + FreeRTOS"]
     sensor["CSI camera sensor<br/>Detected by camera driver"]
@@ -141,7 +141,7 @@ flowchart TB
     catalog -->|"Image inventory and previews"| ui
 ```
 
-`GUI.pyw` launches `GUI.py`, and `Build_GUI_App.cmd` packages that same application as `../../App/BreadboardCameraGUI.exe`. Executables in other folders are build/distribution artifacts; this diagram does not assert that every existing binary matches today's source.
+`GUI.pyw` launches `GUI.py`, and `Build_GUI_App.cmd` packages that same application as `../../App/GUI.exe`. Executables in other folders are build/distribution artifacts; this diagram does not assert that every existing binary matches today's source.
 
 ## Main end-to-end flows
 

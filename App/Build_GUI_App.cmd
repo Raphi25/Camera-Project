@@ -7,7 +7,7 @@ if not exist "%~dp0.venv\Scripts\python.exe" (
     exit /b 1
 )
 "%~dp0.venv\Scripts\python.exe" -m PyInstaller --noconfirm --clean --noconsole --onefile ^
-  --name BreadboardCameraGUI ^
+  --name GUI ^
   --icon "%~dp0Camera.ico" ^
   --add-data "%~dp0Camera.png;." ^
   --collect-all bleak ^
@@ -22,6 +22,6 @@ if errorlevel 1 (
     pause
     exit /b 1
 )
-echo Built %~dp0BreadboardCameraGUI.exe
+echo Built %~dp0GUI.exe
 pause
 exit /b 0

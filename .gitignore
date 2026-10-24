@@ -16,6 +16,7 @@ __pycache__/
 # Generated application output
 dist/
 *.exe
+!App/GUI.exe
 
 # Generated firmware
 *.bin
